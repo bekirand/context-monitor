@@ -253,9 +253,24 @@ body {
   font-weight: 800;
   letter-spacing: -0.5px;
   font-variant-numeric: tabular-nums;
-  color: #38bdf8;
   line-height: 1;
+  transition: color 0.4s cubic-bezier(0.16, 1, 0.3, 1), text-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Синхронизация цвета процента со шкалой и погодой */
+.percent-cloudy {
+  color: #38bdf8;
   text-shadow: 0 0 20px rgba(56, 189, 248, 0.45);
+}
+
+.percent-rain {
+  color: #60a5fa;
+  text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+}
+
+.percent-storm {
+  color: #fb7185;
+  text-shadow: 0 0 22px rgba(251, 113, 133, 0.65);
 }
 
 .progress-track {
@@ -282,8 +297,8 @@ body {
 }
 
 .bar-rain {
-  background: linear-gradient(90deg, #475569, #38bdf8);
-  box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.55);
 }
 
 .bar-storm {
@@ -325,9 +340,9 @@ body {
 }
 
 .zone-rain {
-  background: rgba(148, 163, 184, 0.2);
-  color: #e2e8f0;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+  border: 1px solid rgba(96, 165, 250, 0.35);
 }
 
 .zone-storm {

@@ -423,12 +423,14 @@ async function updateContextStats() {
     $('stat-steps').textContent = (stats.stepCount || 0).toLocaleString('ru-RU');
 
     progressBar.classList.remove('bar-cloudy', 'bar-rain', 'bar-storm');
+    percentVal.classList.remove('percent-cloudy', 'percent-rain', 'percent-storm');
     zoneBadge.classList.remove('zone-cloudy', 'zone-rain', 'zone-storm');
 
     // Градации Token Weather (0-40% Облачно, 40-70% Дождь, >70% Шторм)
     if (percent < 40) {
       currentWeatherMood = 'cloudy';
       progressBar.classList.add('bar-cloudy');
+      percentVal.classList.add('percent-cloudy');
       zoneBadge.classList.add('zone-cloudy');
       zoneBadge.textContent = 'Облачно';
       weatherIcon.textContent = '⛅';
@@ -438,6 +440,7 @@ async function updateContextStats() {
     } else if (percent < 70) {
       currentWeatherMood = 'rain';
       progressBar.classList.add('bar-rain');
+      percentVal.classList.add('percent-rain');
       zoneBadge.classList.add('zone-rain');
       zoneBadge.textContent = 'Дождь';
       weatherIcon.textContent = '🌧️';
@@ -447,6 +450,7 @@ async function updateContextStats() {
     } else {
       currentWeatherMood = 'storm';
       progressBar.classList.add('bar-storm');
+      percentVal.classList.add('percent-storm');
       zoneBadge.classList.add('zone-storm');
       zoneBadge.textContent = 'Шторм';
       weatherIcon.textContent = '⛈️';
