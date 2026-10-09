@@ -77,8 +77,8 @@ function initWeatherCanvas() {
       cloudB: 245,
       cloudAlpha: 0.32,
       rainDensity: 0.0,
-      rainSlant: 0.04,
-      rainSpeed: 1.0,
+      rainSlant: 0.0,            // Нет наклона
+      rainSpeed: 0.7,
     },
     rain: {
       skyTop: [7, 16, 28],       // Пасмурное дождливое небо
@@ -88,7 +88,7 @@ function initWeatherCanvas() {
       cloudB: 160,
       cloudAlpha: 0.44,
       rainDensity: 0.65,
-      rainSlant: 0.08,
+      rainSlant: 0.0,            // Чисто вертикальное отвесное падение (90°)
       rainSpeed: 0.85,           // Спокойный, медитативный ритм
     },
     storm: {
@@ -99,8 +99,8 @@ function initWeatherCanvas() {
       cloudB: 72,
       cloudAlpha: 0.58,
       rainDensity: 1.0,
-      rainSlant: 0.22,           // Умеренный наклон ветра
-      rainSpeed: 1.15,           // Комфортная скорость без дергания глаз!
+      rainSlant: 0.07,           // Естественный легкий наклон по ветру (~4°)
+      rainSpeed: 1.15,           // Плавная скорость без мельтешения
     },
   };
 
@@ -246,43 +246,43 @@ function initWeatherCanvas() {
       ctx.restore();
     }
 
-    // 3. Отрисовка Дождя / Ливня (Органичные капли со световым шлейфом)
+    // 3. Отрисовка Дождя / Ливня (Четкая сонаправленность траектории и шлейфа)
     if (current.rainDensity > 0.02) {
       const activeDropCount = Math.round(drops.length * current.rainDensity);
-      // Ветровое покачивание (дыхание бури вместо статичной линии)
-      const windGust = currentWeatherMood === 'storm' 
-        ? Math.sin(now * 0.0009) * 0.06 + Math.cos(now * 0.0004) * 0.03 
-        : Math.sin(now * 0.0005) * 0.02;
-      const effectiveSlant = current.rainSlant + windGust;
+      const slant = current.rainSlant; // в дожде = 0 (чистая вертикаль), в шторме = 0.07
 
       for (let i = 0; i < activeDropCount; i++) {
         const d = drops[i];
-        d.y += d.speed * current.rainSpeed;
-        d.x += effectiveSlant * (d.speed * current.rainSpeed);
+        const stepY = d.speed * current.rainSpeed;
+        const stepX = slant * stepY;
+
+        d.y += stepY;
+        d.x += stepX;
 
         if (d.y > 1.05) {
-          d.y = -0.05 - Math.random() * 0.25; // случайная неравномерная пауза перед спавном
+          d.y = -0.05 - Math.random() * 0.2;
           d.x = Math.random();
         }
         if (d.x > 1.05) d.x = -0.05;
         if (d.x < -0.05) d.x = 1.05;
 
-        const x1 = d.x * width;
-        const y1 = d.y * height;
-        const dropLen = d.length;
-        const x2 = x1 - effectiveSlant * dropLen;
-        const y2 = y1 + dropLen;
+        // Головка капли (нижняя ведущая точка, летит вниз)
+        const headX = d.x * width;
+        const headY = d.y * height;
+        // Хвост капли (тянется сзади вверху строго по вектору скорости)
+        const tailX = headX - slant * d.length;
+        const tailY = headY - d.length;
 
-        const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+        const grad = ctx.createLinearGradient(tailX, tailY, headX, headY);
         grad.addColorStop(0, `rgba(180, 215, 255, 0)`); // хвост плавно сходит на нет
-        grad.addColorStop(1, `rgba(220, 240, 255, ${d.alpha * current.rainDensity})`); // головка капли закруглена и четкая
+        grad.addColorStop(1, `rgba(220, 240, 255, ${d.alpha * current.rainDensity})`); // закругленная четкая головка
 
         ctx.strokeStyle = grad;
         ctx.lineWidth = d.width;
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(headX, headY);
         ctx.stroke();
       }
     }
