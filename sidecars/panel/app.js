@@ -81,15 +81,15 @@ function initWeatherCanvas() {
       rainSpeed: 1.0,
     },
     rain: {
-      skyTop: [6, 14, 26],       // Пасмурное дождливое небо
-      skyBottom: [14, 28, 44],
+      skyTop: [7, 16, 28],       // Пасмурное дождливое небо
+      skyBottom: [15, 30, 48],
       cloudR: 120,
       cloudG: 138,
       cloudB: 160,
-      cloudAlpha: 0.42,
+      cloudAlpha: 0.44,
       rainDensity: 0.65,
-      rainSlant: 0.12,
-      rainSpeed: 1.35,
+      rainSlant: 0.08,
+      rainSpeed: 0.85,           // Спокойный, медитативный ритм
     },
     storm: {
       skyTop: [3, 5, 12],        // Свинцовое грозовое небо
@@ -99,8 +99,8 @@ function initWeatherCanvas() {
       cloudB: 72,
       cloudAlpha: 0.58,
       rainDensity: 1.0,
-      rainSlant: 0.38,
-      rainSpeed: 1.85,
+      rainSlant: 0.22,           // Умеренный наклон ветра
+      rainSpeed: 1.15,           // Комфортная скорость без дергания глаз!
     },
   };
 
@@ -124,14 +124,27 @@ function initWeatherCanvas() {
     ]},
   ];
 
-  // Пул капель дождя
-  const drops = Array.from({ length: 90 }, () => ({
-    x: Math.random(),
-    y: Math.random(),
-    speed: 0.018 + Math.random() * 0.024,
-    length: 14 + Math.random() * 16,
-    alpha: 0.2 + Math.random() * 0.35,
-  }));
+  // 3 Слоя глубины капель: дальний (мгла), средний, ближний
+  // Всего 38 капель вместо 90: никакой каши, мельтешения и дергания глаз!
+  const rainLayers = [
+    { count: 18, width: 0.75, baseAlpha: 0.16, minLen: 8, maxLen: 13, minSpeed: 0.005, maxSpeed: 0.007 },
+    { count: 14, width: 1.1, baseAlpha: 0.30, minLen: 14, maxLen: 20, minSpeed: 0.008, maxSpeed: 0.011 },
+    { count: 6, width: 1.5, baseAlpha: 0.48, minLen: 22, maxLen: 28, minSpeed: 0.012, maxSpeed: 0.015 }
+  ];
+
+  const drops = [];
+  rainLayers.forEach((layer) => {
+    for (let i = 0; i < layer.count; i++) {
+      drops.push({
+        x: Math.random(),
+        y: Math.random() * 1.3 - 0.2,
+        speed: layer.minSpeed + Math.random() * (layer.maxSpeed - layer.minSpeed),
+        length: layer.minLen + Math.random() * (layer.maxLen - layer.minLen),
+        width: layer.width,
+        alpha: layer.baseAlpha,
+      });
+    }
+  });
 
   // Генератор грозовых вспышек
   let nextStrikeTime = Date.now() + 5000;
@@ -233,34 +246,45 @@ function initWeatherCanvas() {
       ctx.restore();
     }
 
-    // 3. Отрисовка Дождя / Ливня
+    // 3. Отрисовка Дождя / Ливня (Органичные капли со световым шлейфом)
     if (current.rainDensity > 0.02) {
       const activeDropCount = Math.round(drops.length * current.rainDensity);
-      ctx.strokeStyle = `rgba(200, 225, 255, ${0.45 * current.rainDensity})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
+      // Ветровое покачивание (дыхание бури вместо статичной линии)
+      const windGust = currentWeatherMood === 'storm' 
+        ? Math.sin(now * 0.0009) * 0.06 + Math.cos(now * 0.0004) * 0.03 
+        : Math.sin(now * 0.0005) * 0.02;
+      const effectiveSlant = current.rainSlant + windGust;
 
       for (let i = 0; i < activeDropCount; i++) {
         const d = drops[i];
         d.y += d.speed * current.rainSpeed;
-        d.x += current.rainSlant * (d.speed * current.rainSpeed);
+        d.x += effectiveSlant * (d.speed * current.rainSpeed);
 
         if (d.y > 1.05) {
-          d.y = -0.05;
+          d.y = -0.05 - Math.random() * 0.25; // случайная неравномерная пауза перед спавном
           d.x = Math.random();
         }
         if (d.x > 1.05) d.x = -0.05;
+        if (d.x < -0.05) d.x = 1.05;
 
         const x1 = d.x * width;
         const y1 = d.y * height;
-        const dropLen = d.length * (0.8 + current.rainSpeed * 0.4);
-        const x2 = x1 - current.rainSlant * dropLen;
+        const dropLen = d.length;
+        const x2 = x1 - effectiveSlant * dropLen;
         const y2 = y1 + dropLen;
 
+        const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+        grad.addColorStop(0, `rgba(180, 215, 255, 0)`); // хвост плавно сходит на нет
+        grad.addColorStop(1, `rgba(220, 240, 255, ${d.alpha * current.rainDensity})`); // головка капли закруглена и четкая
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = d.width;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
+        ctx.stroke();
       }
-      ctx.stroke();
     }
 
     // 4. Освещение зарницы на небе (DOM Flash)
