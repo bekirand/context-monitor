@@ -47,6 +47,10 @@ async function loadSettingsUI() {
     const s = await callApi('/api/settings', {}, 'GET');
     const badge = $('mode-badge');
     const status = $('key-status');
+    const presetSelect = $('model-preset-select');
+    if (presetSelect && s.modelPreset) {
+      presetSelect.value = s.modelPreset;
+    }
     if (s.hasApiKey) {
       badge.textContent = '⚡ Режим: AI API (1 клик)';
       badge.className = 'badge ok';
@@ -98,10 +102,11 @@ async function updateContextStats() {
     const percentVal = $('percent-val');
     const zoneBadge = $('zone-status');
     const recommendation = $('recommendation-text');
+    const limitLabel = stats.limitLabel || (stats.limit >= 1000000 ? '1.0M' : '200k');
 
     percentVal.textContent = `${percent}%`;
     progressBar.style.width = `${percent}%`;
-    $('tokens-text').textContent = `${formatTokens(stats.totalContext)} / 1.0M токенов`;
+    $('tokens-text').textContent = `${formatTokens(stats.totalContext)} / ${limitLabel} токенов`;
 
     progressBar.classList.remove('bar-green', 'bar-yellow', 'bar-red');
     zoneBadge.classList.remove('zone-green', 'zone-yellow', 'zone-red');
@@ -222,6 +227,20 @@ async function init() {
     updateContextStats();
   });
   $('api-key-save').addEventListener('click', saveApiKey);
+
+  const modelSelect = $('model-preset-select');
+  if (modelSelect) {
+    modelSelect.addEventListener('change', async (e) => {
+      const modelPreset = e.target.value;
+      try {
+        await callApi('/api/settings', { modelPreset }, 'POST');
+        toast(`Лимит обновлен: ${modelPreset === 'claude' ? 'Claude (200k)' : 'Gemini (1.0M)'}`);
+        updateContextStats();
+      } catch (err) {
+        toast('Ошибка: ' + err.message, true);
+      }
+    });
+  }
 
   loadSettingsUI();
   updateContextStats();

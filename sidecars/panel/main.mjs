@@ -17,10 +17,15 @@ app.page('/', () => readLocal('index.html'));
 app.page('/app.js', () => readLocal('app.js'));
 app.api('/styles.css', () => new Response(readLocal('styles.css'), { contentType: 'text/css' }), 'GET');
 
-// Настройки (хранение API ключа)
+// Настройки (хранение API ключа и пресета модели)
 function loadSettings() {
-  if (!existsSync(SETTINGS_FILE)) return { apiKey: '' };
-  try { return JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')); } catch { return { apiKey: '' }; }
+  const defaults = { apiKey: '', modelPreset: 'gemini' };
+  if (!existsSync(SETTINGS_FILE)) return defaults;
+  try {
+    return { ...defaults, ...JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')) };
+  } catch {
+    return defaults;
+  }
 }
 
 function saveSettings(settings) {
@@ -34,13 +39,19 @@ app.api('/api/settings', () => {
   return {
     hasApiKey: Boolean(s.apiKey && s.apiKey.trim().length > 10),
     maskedKey: s.apiKey ? s.apiKey.slice(0, 6) + '...' + s.apiKey.slice(-4) : '',
+    modelPreset: s.modelPreset || 'gemini',
   };
 }, 'GET');
 
 app.api('/api/settings', (data) => {
-  const updated = { apiKey: String(data.apiKey ?? '').trim() };
+  const s = loadSettings();
+  const updated = {
+    ...s,
+    apiKey: data.apiKey !== undefined ? String(data.apiKey).trim() : (s.apiKey || ''),
+    modelPreset: data.modelPreset === 'claude' ? 'claude' : (data.modelPreset === 'gemini' ? 'gemini' : (s.modelPreset || 'gemini')),
+  };
   saveSettings(updated);
-  return { ok: true, hasApiKey: Boolean(updated.apiKey.length > 10) };
+  return { ok: true, hasApiKey: Boolean(updated.apiKey.length > 10), modelPreset: updated.modelPreset };
 }, 'POST');
 
 // Статус работы процесса
@@ -67,6 +78,12 @@ function getContextStats(conversationId) {
     'transcript.jsonl'
   );
 
+  const settings = loadSettings();
+  const isClaude = settings.modelPreset === 'claude';
+  const limit = isClaude ? 200000 : 1000000;
+  const limitLabel = isClaude ? '200k' : '1.0M';
+  const modelLabel = isClaude ? 'Claude Sonnet / Opus (200k)' : 'Gemini Flash / Pro (1.0M)';
+
   if (!existsSync(transcriptPath)) {
     return {
       active: false,
@@ -75,7 +92,10 @@ function getContextStats(conversationId) {
       cacheTokens: 0,
       outputTokens: 0,
       totalContext: 0,
-      limit: 1000000,
+      limit,
+      limitLabel,
+      modelPreset: settings.modelPreset || 'gemini',
+      modelLabel,
       percent: 0,
       stepCount: 0,
     };
@@ -101,7 +121,6 @@ function getContextStats(conversationId) {
     const outputTokens = lastTokens ? (lastTokens.output_tokens || 0) : 0;
     const totalContext = inputTokens + cacheTokens;
     
-    const limit = 1000000;
     const percent = Math.min(100, Math.round((totalContext / limit) * 100));
 
     return {
@@ -112,6 +131,9 @@ function getContextStats(conversationId) {
       outputTokens,
       totalContext,
       limit,
+      limitLabel,
+      modelPreset: settings.modelPreset || 'gemini',
+      modelLabel,
       percent,
       stepCount: lines.length,
       timestamp: lastTokens ? lastTokens.created_at : new Date().toISOString(),

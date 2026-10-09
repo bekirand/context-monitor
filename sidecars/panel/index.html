@@ -14,7 +14,13 @@
         <h1>Token Weather</h1>
         <span id="status-badge" class="badge">Подключение…</span>
       </div>
-      <p class="muted small">Мониторинг окна внимания модели (лимит 1.0M токенов)</p>
+      <div class="model-select-row">
+        <label for="model-preset-select" class="small muted">Профиль модели:</label>
+        <select id="model-preset-select" class="model-select">
+          <option value="gemini">Gemini Flash / Pro (1.0M)</option>
+          <option value="claude">Claude Sonnet / Opus (200k)</option>
+        </select>
+      </div>
     </header>
 
     <!-- Основной датчик заполнения контекста -->
