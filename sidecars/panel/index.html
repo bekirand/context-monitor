@@ -43,20 +43,25 @@
         </div>
       </div>
 
-      <div class="gauge-meter">
-        <div class="gauge-info">
-          <span class="gauge-title">Заполнение контекста</span>
-          <span id="percent-val" class="percent-val">0%</span>
+      <!-- Крупный визуальный фокус на токенах и процентах -->
+      <div class="tokens-hero-block">
+        <div class="tokens-stat">
+          <div class="tokens-label">ТЕКУЩИЙ ОБЪЕМ</div>
+          <div class="tokens-numbers">
+            <span class="tokens-big" id="tokens-val">0</span>
+            <span class="tokens-limit" id="tokens-limit-label">/ 1.0M</span>
+          </div>
         </div>
+        <div class="percent-hero-pill" id="percent-val">0%</div>
+      </div>
 
-        <div class="progress-track">
-          <div id="progress-bar" class="progress-fill bar-cloudy" style="width: 0%"></div>
-        </div>
+      <div class="progress-track">
+        <div id="progress-bar" class="progress-fill bar-cloudy" style="width: 0%"></div>
+      </div>
 
-        <div class="gauge-footer">
-          <span id="tokens-text">0 / 1.0M токенов</span>
-          <span id="zone-status" class="zone-pill zone-cloudy">Облачно</span>
-        </div>
+      <div class="gauge-footer">
+        <span class="gauge-footer-hint" id="gauge-footer-hint">Окно внимания модели</span>
+        <span id="zone-status" class="zone-pill zone-cloudy">Облачно</span>
       </div>
     </section>
 

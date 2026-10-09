@@ -378,7 +378,19 @@ async function updateContextStats() {
 
     percentVal.textContent = `${percent}%`;
     progressBar.style.width = `${percent}%`;
-    $('tokens-text').textContent = `${formatTokens(stats.totalContext)} / ${limitLabel} токенов`;
+
+    if ($('tokens-val')) {
+      $('tokens-val').textContent = formatTokens(stats.totalContext);
+    }
+    if ($('tokens-limit-label')) {
+      $('tokens-limit-label').textContent = `/ ${limitLabel}`;
+    }
+    if ($('tokens-text')) {
+      $('tokens-text').textContent = `${formatTokens(stats.totalContext)} / ${limitLabel} токенов`;
+    }
+    if ($('gauge-footer-hint')) {
+      $('gauge-footer-hint').textContent = `Окно внимания ${currentModelPreset === 'claude' ? 'Claude' : 'Gemini'}`;
+    }
 
     // Детализация 2x2
     $('stat-input').textContent = formatTokens(stats.inputTokens);
