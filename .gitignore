@@ -1,0 +1,15 @@
+# Antigravity runtime data & user settings
+.data/
+settings.json
+*.key
+
+# Dependencies & Logs
+node_modules/
+*.log
+npm-debug.log*
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

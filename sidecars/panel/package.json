@@ -1,0 +1,7 @@
+{
+  "name": "context-monitor-panel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Side panel for Context Monitor UI extension."
+}

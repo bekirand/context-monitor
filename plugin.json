@@ -1,0 +1,6 @@
+{
+  "name": "context-monitor",
+  "displayName": "Context Monitor",
+  "description": "Мониторинг расхода токенов и контекста сессии (Token Weather) в реальном времени.",
+  "logo": "assets/logo.svg"
+}
