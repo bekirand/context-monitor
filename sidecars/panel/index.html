@@ -8,7 +8,7 @@
   <script src="/preload.js"></script>
 </head>
 <body>
-  <!-- Живой процедурный погодный фон (Canvas 2D, <0.5% CPU) -->
+  <!-- Живой процедурный погодный фон (Небо, Облака, Дождь, Гроза) -->
   <canvas id="weather-canvas" class="weather-canvas"></canvas>
 
   <main class="panel">
@@ -36,10 +36,10 @@
     <!-- Основной датчик: Frosted Glass Card + Weather Mood -->
     <section class="card glass-card hero-gauge">
       <div class="weather-banner" id="weather-banner">
-        <span class="weather-icon" id="weather-icon">☀️</span>
+        <span class="weather-icon" id="weather-icon">⛅</span>
         <div class="weather-meta">
-          <div class="weather-status-text" id="weather-status-text">Ясно • Полный штиль</div>
-          <div class="weather-sub-text" id="weather-sub-text">Контекст чист, модель на пике внимания</div>
+          <div class="weather-status-text" id="weather-status-text">Облачно • Спокойное небо</div>
+          <div class="weather-sub-text" id="weather-sub-text">Контекст в норме (0–40%), стабильная скорость</div>
         </div>
       </div>
 
@@ -50,12 +50,12 @@
         </div>
 
         <div class="progress-track">
-          <div id="progress-bar" class="progress-fill bar-clear" style="width: 0%"></div>
+          <div id="progress-bar" class="progress-fill bar-cloudy" style="width: 0%"></div>
         </div>
 
         <div class="gauge-footer">
           <span id="tokens-text">0 / 1.0M токенов</span>
-          <span id="zone-status" class="zone-pill zone-clear">Штиль</span>
+          <span id="zone-status" class="zone-pill zone-cloudy">Облачно</span>
         </div>
       </div>
     </section>
@@ -64,7 +64,7 @@
     <section class="card glass-card">
       <div class="card-header">
         <h2>Метрики сессии</h2>
-        <button id="refresh-btn" type="button" class="btn-icon" title="Обновить">↻</button>
+        <button id="refresh-btn" type="button" class="btn-icon" title="Обновить данные">↻</button>
       </div>
       <div class="stats-grid">
         <div class="stat-tile">

@@ -1,12 +1,11 @@
 :root {
   --radius: 12px;
   --gap: 10px;
-  --bg-base: #030712;
-  --glass-fill: rgba(15, 23, 42, 0.68);
-  --glass-fill-subtle: rgba(15, 23, 42, 0.45);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-hover: rgba(255, 255, 255, 0.18);
-  --glass-inner-light: rgba(255, 255, 255, 0.10);
+  --bg-base: #060d19;
+  --glass-fill: rgba(10, 17, 30, 0.74);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-hover: rgba(255, 255, 255, 0.20);
+  --glass-inner-light: rgba(255, 255, 255, 0.12);
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --accent-cyan: #38bdf8;
@@ -33,7 +32,7 @@ body {
   min-height: 100vh;
 }
 
-/* Живой погодный Canvas на фоне */
+/* Живой погодный Canvas на фоне (Небо, Облака, Дождь, Молнии) */
 .weather-canvas {
   position: fixed;
   top: 0;
@@ -77,7 +76,7 @@ body {
 
 .app-icon {
   font-size: 16px;
-  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
 }
 
 .panel-header h1 {
@@ -86,16 +85,18 @@ body {
   font-weight: 700;
   letter-spacing: -0.2px;
   color: var(--text-main);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .model-pills {
   display: flex;
   gap: 4px;
-  background: rgba(10, 16, 28, 0.65);
+  background: rgba(8, 14, 26, 0.75);
   padding: 3px;
   border-radius: 8px;
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .pill-btn {
@@ -113,25 +114,25 @@ body {
 
 .pill-btn:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .pill-btn.active {
-  background: rgba(56, 189, 248, 0.16);
+  background: rgba(56, 189, 248, 0.18);
   color: #38bdf8;
-  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 /* Frosted Glass Карточки (glass-dark-ui) */
 .glass-card {
   background: var(--glass-fill);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.45), inset 0 1px 0 var(--glass-inner-light);
+  box-shadow: 0 14px 36px rgba(2, 6, 23, 0.5), inset 0 1px 0 var(--glass-inner-light);
   padding: 12px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .glass-card:hover {
@@ -148,18 +149,18 @@ body {
 
 .card-header h2 {
   margin: 0;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   color: var(--text-muted);
 }
 
 /* Hero Weather & Gauge Card */
 .hero-gauge {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.75), rgba(8, 14, 26, 0.82));
-  border-color: rgba(56, 189, 248, 0.18);
-  box-shadow: 0 16px 40px rgba(2, 6, 23, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(180deg, rgba(12, 20, 36, 0.8), rgba(7, 13, 24, 0.85));
+  border-color: rgba(56, 189, 248, 0.2);
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .weather-banner {
@@ -167,14 +168,14 @@ body {
   align-items: center;
   gap: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 10px;
 }
 
 .weather-icon {
-  font-size: 26px;
+  font-size: 28px;
   line-height: 1;
-  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.3));
+  filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.3));
   animation: floatIcon 3.5s ease-in-out infinite;
 }
 
@@ -224,6 +225,7 @@ body {
   letter-spacing: -0.5px;
   font-variant-numeric: tabular-nums;
   color: var(--text-main);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .progress-track {
@@ -232,8 +234,8 @@ body {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 999px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .progress-fill {
@@ -242,14 +244,15 @@ body {
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
 }
 
-.bar-clear {
+/* Градации заполнения шкалы */
+.bar-cloudy {
   background: linear-gradient(90deg, #0284c7, #38bdf8);
   box-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
 }
 
-.bar-cloudy {
-  background: linear-gradient(90deg, #d97706, #fbbf24);
-  box-shadow: 0 0 14px rgba(245, 158, 11, 0.55);
+.bar-rain {
+  background: linear-gradient(90deg, #475569, #38bdf8);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
 }
 
 .bar-storm {
@@ -276,30 +279,30 @@ body {
 }
 
 .zone-pill {
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.zone-clear {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  letter-spacing: 0.4px;
 }
 
 .zone-cloudy {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+}
+
+.zone-rain {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .zone-storm {
-  background: rgba(244, 63, 94, 0.18);
+  background: rgba(244, 63, 94, 0.2);
   color: #fb7185;
-  border: 1px solid rgba(244, 63, 94, 0.35);
+  border: 1px solid rgba(244, 63, 94, 0.4);
 }
 
 /* Компактная Сетка Метрик 2x2 */
@@ -310,8 +313,8 @@ body {
 }
 
 .stat-tile {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 8px;
   padding: 8px 10px;
   display: flex;
@@ -339,7 +342,7 @@ body {
   font-weight: 600;
   color: #ffffff;
   background: linear-gradient(180deg, #0284c7, #0369a1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
@@ -382,15 +385,15 @@ body {
 }
 
 .badge.ok {
-  background: rgba(34, 197, 94, 0.15);
+  background: rgba(34, 197, 94, 0.16);
   color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.25);
+  border: 1px solid rgba(34, 197, 94, 0.28);
 }
 
 .badge.error {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.16);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(239, 68, 68, 0.28);
 }
 
 .small {
@@ -426,7 +429,7 @@ body {
   flex: 1;
   padding: 6px 10px;
   font-size: 11px;
-  background: rgba(10, 16, 28, 0.6);
+  background: rgba(8, 14, 26, 0.7);
   color: var(--text-main);
   border: 1px solid var(--glass-border);
   border-radius: 6px;
@@ -456,9 +459,9 @@ body {
   padding: 8px 12px;
   font-size: 12px;
   text-align: center;
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(10, 17, 30, 0.94);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   border-radius: 6px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   z-index: 10;

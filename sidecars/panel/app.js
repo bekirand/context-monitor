@@ -4,7 +4,7 @@ const $ = (id) => document.getElementById(id);
 let toastTimer;
 let currentWorkspacePath = '';
 let currentModelPreset = 'gemini';
-let currentWeatherMood = 'clear'; // 'clear' | 'cloudy' | 'storm'
+let currentWeatherMood = 'cloudy'; // 'cloudy' (0-40%) | 'rain' (40-70%) | 'storm' (>70%)
 
 function toast(message, isError = false) {
   const el = $('toast');
@@ -43,7 +43,7 @@ function parseFileUriToPath(uri) {
 }
 
 // -------------------------------------------------------------
-// Движок Живого Погодного Фона (Canvas 2D Mesh, <0.5% CPU)
+// Кинематографичный Процедурный Движок Погоды (Canvas 2D)
 // -------------------------------------------------------------
 function initWeatherCanvas() {
   const canvas = $('weather-canvas');
@@ -54,13 +54,97 @@ function initWeatherCanvas() {
   let rafId = 0;
   let isVisible = true;
 
-  // Капли дождя для режима шторма (легковесный пул)
-  const drops = Array.from({ length: 28 }, () => ({
+  // Плавная интерполяция погодных состояний (Lerp)
+  const current = {
+    skyTop: [8, 24, 46],
+    skyBottom: [22, 54, 88],
+    cloudR: 210,
+    cloudG: 226,
+    cloudB: 245,
+    cloudAlpha: 0.28,
+    rainDensity: 0.0,
+    rainSlant: 0.05,
+    rainSpeed: 1.0,
+    flashIntensity: 0.0,
+  };
+
+  const targets = {
+    cloudy: {
+      skyTop: [8, 24, 46],       // Спокойное вечернее небо
+      skyBottom: [22, 54, 88],
+      cloudR: 215,
+      cloudG: 228,
+      cloudB: 245,
+      cloudAlpha: 0.32,
+      rainDensity: 0.0,
+      rainSlant: 0.04,
+      rainSpeed: 1.0,
+    },
+    rain: {
+      skyTop: [6, 14, 26],       // Пасмурное дождливое небо
+      skyBottom: [14, 28, 44],
+      cloudR: 120,
+      cloudG: 138,
+      cloudB: 160,
+      cloudAlpha: 0.42,
+      rainDensity: 0.65,
+      rainSlant: 0.12,
+      rainSpeed: 1.35,
+    },
+    storm: {
+      skyTop: [3, 5, 12],        // Свинцовое грозовое небо
+      skyBottom: [10, 14, 24],
+      cloudR: 45,
+      cloudG: 52,
+      cloudB: 72,
+      cloudAlpha: 0.58,
+      rainDensity: 1.0,
+      rainSlant: 0.38,
+      rainSpeed: 1.85,
+    },
+  };
+
+  // Процедурные облака с параллаксом
+  const clouds = [
+    { x: 30, y: 70, scale: 1.1, speed: 0.09, puffs: [
+      { dx: 0, dy: 0, r: 48 }, { dx: 38, dy: -12, r: 40 }, { dx: -38, dy: -8, r: 38 },
+      { dx: 68, dy: 8, r: 32 }, { dx: -68, dy: 10, r: 30 }, { dx: 18, dy: -26, r: 34 }
+    ]},
+    { x: 220, y: 140, scale: 0.85, speed: 0.06, puffs: [
+      { dx: 0, dy: 0, r: 42 }, { dx: 32, dy: -10, r: 34 }, { dx: -32, dy: -6, r: 32 },
+      { dx: 58, dy: 6, r: 28 }, { dx: -54, dy: 8, r: 26 }
+    ]},
+    { x: 420, y: 40, scale: 1.3, speed: 0.12, puffs: [
+      { dx: 0, dy: 0, r: 54 }, { dx: 44, dy: -14, r: 46 }, { dx: -44, dy: -10, r: 42 },
+      { dx: 82, dy: 10, r: 36 }, { dx: -80, dy: 12, r: 34 }, { dx: 24, dy: -28, r: 40 }
+    ]},
+    { x: 600, y: 190, scale: 0.95, speed: 0.08, puffs: [
+      { dx: 0, dy: 0, r: 44 }, { dx: 34, dy: -10, r: 36 }, { dx: -34, dy: -8, r: 34 },
+      { dx: 62, dy: 8, r: 28 }, { dx: -58, dy: 10, r: 26 }
+    ]},
+  ];
+
+  // Пул капель дождя
+  const drops = Array.from({ length: 90 }, () => ({
     x: Math.random(),
     y: Math.random(),
-    speed: 0.015 + Math.random() * 0.02,
-    length: 12 + Math.random() * 14,
+    speed: 0.018 + Math.random() * 0.024,
+    length: 14 + Math.random() * 16,
+    alpha: 0.2 + Math.random() * 0.35,
   }));
+
+  // Генератор грозовых вспышек
+  let nextStrikeTime = Date.now() + 5000;
+  let flashPulses = [];
+
+  function triggerLightning() {
+    const intensity = 0.5 + Math.random() * 0.5;
+    flashPulses = [
+      { startTime: Date.now(), peak: intensity, duration: 90 },
+      { startTime: Date.now() + 110, peak: intensity * 0.65, duration: 140 },
+    ];
+    nextStrikeTime = Date.now() + 4500 + Math.random() * 6000;
+  }
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -71,62 +155,118 @@ function initWeatherCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function draw(time = 0) {
+  function draw() {
     if (!isVisible) return;
-    ctx.clearRect(0, 0, width, height);
 
-    // Базовый темный фон
-    ctx.fillStyle = '#030712';
+    const target = targets[currentWeatherMood] || targets.cloudy;
+    const lerpSpeed = 0.035;
+
+    // Плавное приближение цветов неба
+    for (let i = 0; i < 3; i++) {
+      current.skyTop[i] += (target.skyTop[i] - current.skyTop[i]) * lerpSpeed;
+      current.skyBottom[i] += (target.skyBottom[i] - current.skyBottom[i]) * lerpSpeed;
+    }
+    current.cloudR += (target.cloudR - current.cloudR) * lerpSpeed;
+    current.cloudG += (target.cloudG - current.cloudG) * lerpSpeed;
+    current.cloudB += (target.cloudB - current.cloudB) * lerpSpeed;
+    current.cloudAlpha += (target.cloudAlpha - current.cloudAlpha) * lerpSpeed;
+    current.rainDensity += (target.rainDensity - current.rainDensity) * lerpSpeed;
+    current.rainSlant += (target.rainSlant - current.rainSlant) * lerpSpeed;
+    current.rainSpeed += (target.rainSpeed - current.rainSpeed) * lerpSpeed;
+
+    // Расчет вспышки грозы
+    let flash = 0;
+    const now = Date.now();
+    if (currentWeatherMood === 'storm' && now >= nextStrikeTime) {
+      triggerLightning();
+    }
+    flashPulses = flashPulses.filter(p => now < p.startTime + p.duration);
+    for (const p of flashPulses) {
+      if (now >= p.startTime) {
+        const progress = (now - p.startTime) / p.duration;
+        flash += p.peak * Math.exp(-progress * 3.5);
+      }
+    }
+    current.flashIntensity = Math.min(1, flash);
+
+    // 1. Отрисовка Неба (Градиент)
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+    const rTop = Math.min(255, Math.round(current.skyTop[0] + current.flashIntensity * 120));
+    const gTop = Math.min(255, Math.round(current.skyTop[1] + current.flashIntensity * 130));
+    const bTop = Math.min(255, Math.round(current.skyTop[2] + current.flashIntensity * 160));
+    const rBot = Math.min(255, Math.round(current.skyBottom[0] + current.flashIntensity * 80));
+    const gBot = Math.min(255, Math.round(current.skyBottom[1] + current.flashIntensity * 90));
+    const bBot = Math.min(255, Math.round(current.skyBottom[2] + current.flashIntensity * 120));
+
+    skyGrad.addColorStop(0, `rgb(${rTop}, ${gTop}, ${bTop})`);
+    skyGrad.addColorStop(1, `rgb(${rBot}, ${gBot}, ${bBot})`);
+    ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, width, height);
 
-    ctx.globalCompositeOperation = 'screen';
+    // 2. Отрисовка Облаков
+    const cloudR = Math.min(255, Math.round(current.cloudR + current.flashIntensity * 140));
+    const cloudG = Math.min(255, Math.round(current.cloudG + current.flashIntensity * 150));
+    const cloudB = Math.min(255, Math.round(current.cloudB + current.flashIntensity * 170));
+    const cloudBaseAlpha = current.cloudAlpha;
 
-    // Конфигурация сфер в зависимости от погодного настроения
-    let p1Color, p2Color;
-    if (currentWeatherMood === 'storm') {
-      p1Color = 'rgba(225, 29, 72, 0.28)';   // Грозовой розово-красный
-      p2Color = 'rgba(79, 70, 229, 0.32)';  // Глубокий индиго
-    } else if (currentWeatherMood === 'cloudy') {
-      p1Color = 'rgba(217, 119, 6, 0.24)';   // Янтарные сумерки
-      p2Color = 'rgba(124, 58, 237, 0.26)';  // Фиолетовый
-    } else {
-      p1Color = 'rgba(2, 132, 199, 0.26)';   // Спокойный лазурный
-      p2Color = 'rgba(56, 189, 248, 0.22)';  // Небесный циан
+    for (const c of clouds) {
+      c.x += c.speed;
+      const cloudW = 200 * c.scale;
+      if (c.x - cloudW > width) {
+        c.x = -cloudW;
+      }
+
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.scale(c.scale, c.scale * 0.75); // Приплюснутая естественная форма
+
+      for (const p of c.puffs) {
+        const puffGrad = ctx.createRadialGradient(p.dx, p.dy, 0, p.dx, p.dy, p.r);
+        puffGrad.addColorStop(0, `rgba(${cloudR}, ${cloudG}, ${cloudB}, ${cloudBaseAlpha})`);
+        puffGrad.addColorStop(0.7, `rgba(${cloudR}, ${cloudG}, ${cloudB}, ${cloudBaseAlpha * 0.65})`);
+        puffGrad.addColorStop(1, `rgba(${cloudR}, ${cloudG}, ${cloudB}, 0)`);
+        ctx.fillStyle = puffGrad;
+        ctx.beginPath();
+        ctx.arc(p.dx, p.dy, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
     }
 
-    // 1-я парящая сфера
-    const drift1X = (Math.sin(time * 0.0002) * 0.25 + 0.5) * width;
-    const drift1Y = (Math.cos(time * 0.00025) * 0.2 + 0.3) * height;
-    const grad1 = ctx.createRadialGradient(drift1X, drift1Y, 0, drift1X, drift1Y, Math.max(width, height) * 0.65);
-    grad1.addColorStop(0, p1Color);
-    grad1.addColorStop(1, 'rgba(3, 7, 18, 0)');
-    ctx.fillStyle = grad1;
-    ctx.fillRect(0, 0, width, height);
-
-    // 2-я парящая сфера
-    const drift2X = (Math.cos(time * 0.00018) * 0.25 + 0.5) * width;
-    const drift2Y = (Math.sin(time * 0.00022) * 0.2 + 0.7) * height;
-    const grad2 = ctx.createRadialGradient(drift2X, drift2Y, 0, drift2X, drift2Y, Math.max(width, height) * 0.65);
-    grad2.addColorStop(0, p2Color);
-    grad2.addColorStop(1, 'rgba(3, 7, 18, 0)');
-    ctx.fillStyle = grad2;
-    ctx.fillRect(0, 0, width, height);
-
-    // Дождь при шторме (>70%)
-    if (currentWeatherMood === 'storm') {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+    // 3. Отрисовка Дождя / Ливня
+    if (current.rainDensity > 0.02) {
+      const activeDropCount = Math.round(drops.length * current.rainDensity);
+      ctx.strokeStyle = `rgba(200, 225, 255, ${0.45 * current.rainDensity})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      for (const d of drops) {
-        d.y += d.speed;
-        if (d.y > 1) d.y = 0;
-        const x = d.x * width;
-        const y = d.y * height;
-        ctx.moveTo(x, y);
-        ctx.lineTo(x - 2, y + d.length);
+
+      for (let i = 0; i < activeDropCount; i++) {
+        const d = drops[i];
+        d.y += d.speed * current.rainSpeed;
+        d.x += current.rainSlant * (d.speed * current.rainSpeed);
+
+        if (d.y > 1.05) {
+          d.y = -0.05;
+          d.x = Math.random();
+        }
+        if (d.x > 1.05) d.x = -0.05;
+
+        const x1 = d.x * width;
+        const y1 = d.y * height;
+        const dropLen = d.length * (0.8 + current.rainSpeed * 0.4);
+        const x2 = x1 - current.rainSlant * dropLen;
+        const y2 = y1 + dropLen;
+
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
       }
       ctx.stroke();
+    }
+
+    // 4. Освещение зарницы на небе (DOM Flash)
+    if (current.flashIntensity > 0.05) {
+      ctx.fillStyle = `rgba(235, 245, 255, ${current.flashIntensity * 0.22})`;
+      ctx.fillRect(0, 0, width, height);
     }
 
     rafId = requestAnimationFrame(draw);
@@ -246,28 +386,28 @@ async function updateContextStats() {
     $('stat-output').textContent = formatTokens(stats.outputTokens);
     $('stat-steps').textContent = (stats.stepCount || 0).toLocaleString('ru-RU');
 
-    progressBar.classList.remove('bar-clear', 'bar-cloudy', 'bar-storm');
-    zoneBadge.classList.remove('zone-clear', 'zone-cloudy', 'zone-storm');
+    progressBar.classList.remove('bar-cloudy', 'bar-rain', 'bar-storm');
+    zoneBadge.classList.remove('zone-cloudy', 'zone-rain', 'zone-storm');
 
-    // Градации Token Weather
+    // Градации Token Weather (0-40% Облачно, 40-70% Дождь, >70% Шторм)
     if (percent < 40) {
-      currentWeatherMood = 'clear';
-      progressBar.classList.add('bar-clear');
-      zoneBadge.classList.add('zone-clear');
-      zoneBadge.textContent = 'Штиль';
-      weatherIcon.textContent = '☀️';
-      weatherStatusText.textContent = 'Ясно • Полный штиль';
-      weatherSubText.textContent = 'Контекст чист, модель на пике внимания';
-      recommendation.textContent = 'Запас контекста огромен. Спокойно продолжайте разработку.';
-    } else if (percent < 70) {
       currentWeatherMood = 'cloudy';
       progressBar.classList.add('bar-cloudy');
       zoneBadge.classList.add('zone-cloudy');
       zoneBadge.textContent = 'Облачно';
       weatherIcon.textContent = '⛅';
-      weatherStatusText.textContent = 'Переменная облачность';
-      weatherSubText.textContent = `Накопление истории (~${percent}%). Следите за расходом`;
-      recommendation.textContent = 'Контекст ощутимо заполнен. При замедлении ответов выполните перенос.';
+      weatherStatusText.textContent = 'Облачно • Спокойное небо';
+      weatherSubText.textContent = 'Контекст в норме (0–40%), стабильная скорость';
+      recommendation.textContent = 'Запас памяти огромен. Продолжайте работу в обычном режиме.';
+    } else if (percent < 70) {
+      currentWeatherMood = 'rain';
+      progressBar.classList.add('bar-rain');
+      zoneBadge.classList.add('zone-rain');
+      zoneBadge.textContent = 'Дождь';
+      weatherIcon.textContent = '🌧️';
+      weatherStatusText.textContent = 'Затяжной дождь';
+      weatherSubText.textContent = `Контекст заполнен (~${percent}%). Готовьте срез задачи`;
+      recommendation.textContent = 'История сессии накопилась. Рекомендуется подготовить Handoff.';
     } else {
       currentWeatherMood = 'storm';
       progressBar.classList.add('bar-storm');
@@ -275,8 +415,8 @@ async function updateContextStats() {
       zoneBadge.textContent = 'Шторм';
       weatherIcon.textContent = '⛈️';
       weatherStatusText.textContent = 'Штормовое предупреждение';
-      weatherSubText.textContent = 'Высокий риск забывания деталей. Пора делать Handoff!';
-      recommendation.textContent = '⚠️ Контекст на пределе. Рекомендуется немедленно начать новый чат со сводкой.';
+      weatherSubText.textContent = 'Критический объем памяти! Высокий риск потери фокуса';
+      recommendation.textContent = '⚠️ Контекст на пределе. Немедленно нажмите кнопку переноса в новый чат.';
     }
   } catch (err) {
     console.error('Ошибка обновления статистики:', err);
