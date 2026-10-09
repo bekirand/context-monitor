@@ -8,79 +8,111 @@
   <script src="/preload.js"></script>
 </head>
 <body>
+  <!-- Живой процедурный погодный фон (Canvas 2D, <0.5% CPU) -->
+  <canvas id="weather-canvas" class="weather-canvas"></canvas>
+
   <main class="panel">
+    <!-- Шапка с сегментным переключателем -->
     <header class="panel-header">
       <div class="header-row">
-        <h1>Token Weather</h1>
+        <div class="title-group">
+          <span class="app-icon">⚡</span>
+          <h1>Token Weather</h1>
+        </div>
         <span id="status-badge" class="badge">Подключение…</span>
       </div>
-      <div class="model-select-row">
-        <label for="model-preset-select" class="small muted">Профиль модели:</label>
-        <select id="model-preset-select" class="model-select">
-          <option value="gemini">Gemini Flash / Pro (1.0M)</option>
-          <option value="claude">Claude Sonnet / Opus (200k)</option>
-        </select>
+
+      <!-- Pill Toggle модели в 1 клик -->
+      <div class="model-pills" role="radiogroup" aria-label="Профиль модели">
+        <button id="preset-gemini" type="button" class="pill-btn active" data-preset="gemini">
+          ⚡ Gemini 1.0M
+        </button>
+        <button id="preset-claude" type="button" class="pill-btn" data-preset="claude">
+          🟣 Claude 200k
+        </button>
       </div>
     </header>
 
-    <!-- Основной датчик заполнения контекста -->
-    <section class="card gauge-card">
-      <div class="gauge-header">
-        <span class="label">Заполнение окна модели</span>
-        <span id="percent-val" class="percent-val">0%</span>
+    <!-- Основной датчик: Frosted Glass Card + Weather Mood -->
+    <section class="card glass-card hero-gauge">
+      <div class="weather-banner" id="weather-banner">
+        <span class="weather-icon" id="weather-icon">☀️</span>
+        <div class="weather-meta">
+          <div class="weather-status-text" id="weather-status-text">Ясно • Полный штиль</div>
+          <div class="weather-sub-text" id="weather-sub-text">Контекст чист, модель на пике внимания</div>
+        </div>
       </div>
 
-      <div class="progress-track">
-        <div id="progress-bar" class="progress-fill" style="width: 0%"></div>
-      </div>
+      <div class="gauge-meter">
+        <div class="gauge-info">
+          <span class="gauge-title">Заполнение контекста</span>
+          <span id="percent-val" class="percent-val">0%</span>
+        </div>
 
-      <div class="gauge-sub">
-        <span id="tokens-text">0 / 1.0M токенов</span>
-        <span id="zone-status" class="zone-badge zone-green">Норма</span>
+        <div class="progress-track">
+          <div id="progress-bar" class="progress-fill bar-clear" style="width: 0%"></div>
+        </div>
+
+        <div class="gauge-footer">
+          <span id="tokens-text">0 / 1.0M токенов</span>
+          <span id="zone-status" class="zone-pill zone-clear">Штиль</span>
+        </div>
       </div>
     </section>
 
-    <!-- Детализация токенов -->
-    <section class="card">
+    <!-- Детализация сессии (Компактный 2x2 Grid) -->
+    <section class="card glass-card">
       <div class="card-header">
-        <h2>Детализация сессии</h2>
+        <h2>Метрики сессии</h2>
         <button id="refresh-btn" type="button" class="btn-icon" title="Обновить">↻</button>
       </div>
-      <dl class="facts">
-        <dt>Входные токены</dt><dd id="stat-input">–</dd>
-        <dt>Прочитано из кэша</dt><dd id="stat-cache">–</dd>
-        <dt>Генерация модели</dt><dd id="stat-output">–</dd>
-        <dt>Шагов в диалоге</dt><dd id="stat-steps">–</dd>
-      </dl>
+      <div class="stats-grid">
+        <div class="stat-tile">
+          <span class="stat-label">📥 Вход</span>
+          <span class="stat-val" id="stat-input">–</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">⚡ Кэш</span>
+          <span class="stat-val" id="stat-cache">–</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">📤 Ответ</span>
+          <span class="stat-val" id="stat-output">–</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">🔄 Шагов</span>
+          <span class="stat-val" id="stat-steps">–</span>
+        </div>
+      </div>
     </section>
 
-    <!-- Перенос контекста в новый чат (Гибридный режим) -->
-    <section class="card action-card">
+    <!-- Перенос контекста в новый чат (Handoff) -->
+    <section class="card glass-card action-card">
       <div class="card-header">
-        <h2>Перенос контекста (Handoff)</h2>
-        <span id="mode-badge" class="badge">Режим: Проверка…</span>
+        <h2>Перенос контекста</h2>
+        <span id="mode-badge" class="badge">Проверка…</span>
       </div>
       <p id="recommendation-text" class="small muted">
-        Создаст новый чат с 0% токенов, перенеся профессиональную выжимку от нейросети.
+        Создаст новый чат с 0% токенов и перенесет структурированный срез задачи.
       </p>
       <div class="actions">
         <button id="handoff-btn" type="button" class="primary-btn">
-          🚀 Новый чат со сводкой
+          🚀 Новый чат со сводкой (Handoff)
         </button>
       </div>
     </section>
 
     <!-- Настройки AI ключа (Опционально) -->
-    <details class="card settings-card">
+    <details class="card glass-card settings-card">
       <summary class="settings-summary">
         <span>⚙️ Настройки AI-генерации (опционально)</span>
       </summary>
       <div class="settings-body">
         <p class="small muted">
-          Укажите бесплатный ключ Gemini API для мгновенной AI-сводки в 1 клик. Если ключ не указан — работает локальный двухэтапный режим через текущего агента.
+          Укажите ключ Gemini API для мгновенной 1-клик сводки. Без ключа работает локальный двухэтапный режим через текущего агента.
         </p>
         <div class="input-row">
-          <input id="api-key-input" type="password" placeholder="Вставьте Gemini API Key (AIza...)" />
+          <input id="api-key-input" type="password" placeholder="Gemini API Key (AIza...)" />
           <button id="api-key-save" type="button" class="secondary">Сохранить</button>
         </div>
         <span id="key-status" class="small muted">Ключ не задан</span>
