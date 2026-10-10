@@ -9,6 +9,10 @@
 [![Inspired by](https://img.shields.io/badge/Inspired%20by-Claude%20Code%20/compact-d97706?style=for-the-badge)](https://claude.ai)
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 
+<br/>
+
+**[English Documentation](README_EN.md)**
+
 </div>
 
 ---
