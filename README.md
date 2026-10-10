@@ -115,12 +115,12 @@
 
 **Windows (PowerShell):**
 ```powershell
-git clone https://github.com/ВАШ_ЛОГИН/context-monitor.git "$HOME\.gemini\config\plugins\context-monitor"
+git clone https://github.com/bekirand/context-monitor.git "$HOME\.gemini\config\plugins\context-monitor"
 ```
 
 **macOS / Linux:**
 ```bash
-git clone https://github.com/ВАШ_ЛОГИН/context-monitor.git ~/.gemini/config/plugins/context-monitor
+git clone https://github.com/bekirand/context-monitor.git ~/.gemini/config/plugins/context-monitor
 ```
 
 ### Способ 2: Вручную
