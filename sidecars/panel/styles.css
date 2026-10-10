@@ -79,6 +79,20 @@ body {
   filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
 }
 
+.app-icon-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: block;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4), 0 2px 5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.app-icon-img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.65);
+}
+
 .panel-header h1 {
   margin: 0;
   font-size: 15px;

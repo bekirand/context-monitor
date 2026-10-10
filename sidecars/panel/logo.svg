@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Фон: глубокий космический индиго-нэви -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1220"/>
+      <stop offset="100%" stop-color="#0d1f38"/>
+    </linearGradient>
+
+    <!-- Тонкая рамка плагина -->
+    <linearGradient id="border-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(56, 189, 248, 0.4)"/>
+      <stop offset="100%" stop-color="rgba(255, 255, 255, 0.08)"/>
+    </linearGradient>
+
+    <!-- Солнце: золотисто-янтарный градиент -->
+    <linearGradient id="sun-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <!-- Облако: объемный чистый градиент с подсветкой -->
+    <linearGradient id="cloud-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="65%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+
+    <!-- Нижний контур облака (мягкая тень) -->
+    <linearGradient id="cloud-shadow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+
+    <!-- Молния токенов: электрический неон Cyan -> Blue -->
+    <linearGradient id="lightning-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7dd3fc"/>
+      <stop offset="40%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+
+    <!-- Капли дождя -->
+    <linearGradient id="drop-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+
+    <!-- Неоновое свечение молнии -->
+    <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Мягкая тень под облаком -->
+    <filter id="drop-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#020617" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Подложка иконки (Squircle с неоновым кантом) -->
+  <rect width="64" height="64" rx="14" fill="url(#bg-grad)"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="url(#border-grad)" stroke-width="1.5"/>
+
+  <!-- 1. Солнце (выглядывает из-за облака) -->
+  <circle cx="41.5" cy="20.5" r="8" fill="url(#sun-grad)"/>
+  <!-- Мягкая солнечная корона -->
+  <circle cx="41.5" cy="20.5" r="10.5" fill="none" stroke="#fde047" stroke-width="1" stroke-opacity="0.35"/>
+
+  <!-- 2. Капли дождя (слой под облаком) -->
+  <!-- Левая капля -->
+  <path d="M 18.5 43.5 C 18.5 43.5 16.5 46.5 16.5 48 C 16.5 49.3 17.4 50.2 18.5 50.2 C 19.6 50.2 20.5 49.3 20.5 48 C 20.5 46.5 18.5 43.5 18.5 43.5 Z" fill="url(#drop-grad)"/>
+  <!-- Правая капля -->
+  <path d="M 44.5 44 C 44.5 44 42 47.5 42 49.5 C 42 51 43.1 52 44.5 52 C 45.9 52 47 51 47 49.5 C 47 47.5 44.5 44 44.5 44 Z" fill="url(#drop-grad)"/>
+
+  <!-- 3. Энергетическая молния токенов (вырывается из облака) -->
+  <path d="M 33.5 37 L 27 46.5 L 32 46.5 L 27.5 56.5 L 38 44.5 L 32.5 44.5 Z" 
+        fill="url(#lightning-grad)" 
+        filter="url(#neon-glow)"/>
+
+  <!-- 4. Объемное облако (центральный фокус логотипа) -->
+  <g filter="url(#drop-shadow)">
+    <!-- Теневая база облака -->
+    <path d="M 20.5 39.5
+             C 16.5 39.5, 13 36.2, 13 32
+             C 13 28, 16.2 24.8, 20.2 24.5
+             C 21.8 19.5, 26.5 16, 32 16
+             C 38.5 16, 43.5 20.5, 44.5 26.5
+             C 48 27.2, 51 30.2, 51 33.8
+             C 51 38, 47.5 40.5, 43.5 40.5
+             Z" 
+          fill="url(#cloud-shadow)" opacity="0.65"/>
+
+    <!-- Основное белое тело облака -->
+    <path d="M 20 38
+             C 16 38, 13 34.8, 13 31
+             C 13 27.2, 16 24.2, 19.8 24
+             C 21.3 19.2, 26 16, 31.5 16
+             C 38 16, 43 20.2, 44 26
+             C 47.2 26.8, 50 29.8, 50 33
+             C 50 37, 46.8 39, 43 39
+             Z" 
+          fill="url(#cloud-grad)"/>
+
+    <!-- Верхний световой блик на шапке облака -->
+    <path d="M 23 23 C 25.5 18.5, 28.5 17.5, 33 17.5 C 37 17.5, 40.5 19.5, 42 23" 
+          fill="none" 
+          stroke="#ffffff" 
+          stroke-width="1.5" 
+          stroke-linecap="round" 
+          opacity="0.85"/>
+  </g>
+</svg>

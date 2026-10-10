@@ -16,6 +16,7 @@ const readLocal = (name) => readFileSync(join(HERE, name), 'utf8');
 app.page('/', () => readLocal('index.html'));
 app.page('/app.js', () => readLocal('app.js'));
 app.api('/styles.css', () => new Response(readLocal('styles.css'), { contentType: 'text/css' }), 'GET');
+app.api('/logo.svg', () => new Response(readLocal('logo.svg'), { contentType: 'image/svg+xml' }), 'GET');
 
 // Настройки (хранение API ключа и пресета модели)
 function loadSettings() {
