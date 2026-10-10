@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Context-Monitor">
   <diagram id="context-monitor-flow-ru" name="Конвейер процессов">
-    <mxGraphModel dx="1388" dy="760" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="460" background="#080e1a" math="0" shadow="0">
+    <mxGraphModel dx="1157" dy="633" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="460" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -86,8 +86,8 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="edge_4_5" edge="1" parent="1" source="node_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#10b981;strokeWidth=2;fillColor=#10b981;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#6ee7b7;fontSize=10;fontStyle=1;align=center;" target="node_5" value="1 клик Handoff">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint y="-14" as="offset" />
+          <mxGeometry relative="1" x="0.0182" y="14" as="geometry">
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="edge_loop" edge="1" parent="1" source="node_5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#64748b;strokeWidth=1.5;dashed=1;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#94a3b8;fontSize=10.5;align=center;" target="node_1" value="Старт нового чистого диалога с нулевой памятью (0% токенов)">
