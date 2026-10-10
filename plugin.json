@@ -1,6 +1,9 @@
 {
   "name": "context-monitor",
   "displayName": "Context Monitor",
+  "version": "1.0.0",
   "description": "Мониторинг расхода токенов и контекста сессии (Token Weather) в реальном времени.",
+  "author": "bekirand",
+  "repository": "https://github.com/bekirand/context-monitor",
   "logo": "assets/logo.svg"
 }

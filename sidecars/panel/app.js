@@ -38,9 +38,14 @@ async function callApi(path, body = {}, method = 'POST') {
 
 function parseFileUriToPath(uri) {
   if (!uri) return '';
-  let str = uri.replace(/^file:\/\/\//i, '').replace(/^file:\/\//i, '');
+  let str = uri.replace(/^file:\/\//i, '');
   str = decodeURIComponent(str);
-  return str.replace(/\//g, '\\');
+  // На Windows путь вида /C:/... или C:/...
+  if (/^\/?[a-zA-Z]:/.test(str)) {
+    return str.replace(/^\//, '').replace(/\//g, '\\');
+  }
+  // На macOS / Linux сохраняем абсолютный POSIX-путь
+  return str.startsWith('/') ? str : '/' + str;
 }
 
 // -------------------------------------------------------------
