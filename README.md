@@ -83,8 +83,10 @@
 
 ## 🖥 Как это выглядит в боковой панели
 
+На скриншоте представлены два режима панели рядом — пресет **Gemini (1.0M)** слева и **Claude (200k)** справа с индивидуальной калибровкой шкал и порогов сжатия:
+
 <p align="center">
-  <img src="assets/panel.png" alt="Виджет Context Monitor в боковой панели Antigravity" width="500">
+  <img src="assets/panel.png" alt="Сравнение виджета Context Monitor: пресеты Gemini (1.0M) и Claude (200k)" width="100%">
 </p>
 
 ---
