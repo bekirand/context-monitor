@@ -1,96 +1,96 @@
 <mxfile host="app.diagrams.net" agent="Context-Monitor">
   <diagram id="context-monitor-flow-ru" name="Конвейер процессов">
-    <mxGraphModel dx="1157" dy="633" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="460" math="0" shadow="0">
+    <mxGraphModel dx="1280" dy="500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="460" background="#080e1a" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="title" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#38bdf8;fontSize=15;fontStyle=1;letterSpacing=1;" value="CONTEXT MONITOR: АРХИТЕКТУРА И ПОТОК ДАННЫХ" vertex="1">
-          <mxGeometry height="30" width="440" x="380" y="25" as="geometry" />
+          <mxGeometry height="30" width="440" x="420" y="25" as="geometry" />
         </mxCell>
-        <mxCell id="subtitle" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#64748b;fontSize=11;" value="Непрерывный процесс сбора аппаратных метрик, прогнозирования сжатия и Safe Handoff (слева направо)" vertex="1">
-          <mxGeometry height="20" width="600" x="300" y="55" as="geometry" />
+        <mxCell id="subtitle" parent="1" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#64748b;fontSize=11;" value="Непрерывный сбор аппаратных метрик, прогноз лимита окна и Safe Handoff" vertex="1">
+          <mxGeometry height="20" width="550" x="365" y="55" as="geometry" />
         </mxCell>
         <mxCell id="node_1" parent="1" style="rounded=1;arcSize=10;fillColor=#0c1626;strokeColor=#3b82f6;strokeWidth=1.5;html=1;shadow=1;" value="" vertex="1">
-          <mxGeometry height="185" width="180" x="40" y="125" as="geometry" />
+          <mxGeometry height="185" width="160" x="60" y="125" as="geometry" />
         </mxCell>
         <mxCell id="badge_1" parent="1" style="rounded=1;arcSize=50;fillColor=#1e3a5f;strokeColor=#3b82f6;strokeWidth=1;html=1;align=center;verticalAlign=middle;fontColor=#93c5fd;fontSize=10;fontStyle=1;" value="01" vertex="1">
-          <mxGeometry height="20" width="26" x="55" y="140" as="geometry" />
+          <mxGeometry height="20" width="24" x="72" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_1_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="Сессия агента" vertex="1">
-          <mxGeometry height="20" width="120" x="88" y="140" as="geometry" />
+        <mxCell id="text_1_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=12.5;fontStyle=1;" value="Сессия агента" vertex="1">
+          <mxGeometry height="20" width="110" x="102" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_1_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10.5;spacingLeft=5;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Среда Antigravity&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Цикл диалога и тулов&lt;br&gt;• Накопление контекста&lt;br&gt;• Рост истории сессии&lt;br&gt;• Окно Gemini / Claude&lt;/font&gt;" vertex="1">
-          <mxGeometry height="120" width="160" x="50" y="175" as="geometry" />
+        <mxCell id="text_1_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10;spacingLeft=4;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Среда Antigravity&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Цикл диалога и тулов&lt;br&gt;• Накопление контекста&lt;br&gt;• Рост истории сессии&lt;br&gt;• Окно Gemini / Claude&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="145" x="68" y="175" as="geometry" />
         </mxCell>
         <mxCell id="node_2" parent="1" style="rounded=1;arcSize=10;fillColor=#0c1626;strokeColor=#0ea5e9;strokeWidth=1.5;html=1;shadow=1;" value="" vertex="1">
-          <mxGeometry height="185" width="180" x="275" y="125" as="geometry" />
+          <mxGeometry height="185" width="160" x="310" y="125" as="geometry" />
         </mxCell>
         <mxCell id="badge_2" parent="1" style="rounded=1;arcSize=50;fillColor=#0c3547;strokeColor=#0ea5e9;strokeWidth=1;html=1;align=center;verticalAlign=middle;fontColor=#7dd3fc;fontSize=10;fontStyle=1;" value="02" vertex="1">
-          <mxGeometry height="20" width="26" x="290" y="140" as="geometry" />
+          <mxGeometry height="20" width="24" x="322" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_2_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="Телеметрия" vertex="1">
-          <mxGeometry height="20" width="120" x="323" y="140" as="geometry" />
+        <mxCell id="text_2_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=12.5;fontStyle=1;" value="Телеметрия" vertex="1">
+          <mxGeometry height="20" width="110" x="352" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_2_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10.5;spacingLeft=5;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;transcript.jsonl&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Входные токены (input)&lt;br&gt;• Кэш промпта (cache)&lt;br&gt;• Ответы модели (output)&lt;br&gt;• Аппаратные метрики&lt;/font&gt;" vertex="1">
-          <mxGeometry height="120" width="160" x="285" y="175" as="geometry" />
+        <mxCell id="text_2_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10;spacingLeft=4;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;transcript.jsonl&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• input_tokens&lt;br&gt;• cache_read_tokens&lt;br&gt;• Аппаратный счетчик&lt;br&gt;• Фиксация шагов&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="145" x="318" y="175" as="geometry" />
         </mxCell>
         <mxCell id="node_3" parent="1" style="rounded=1;arcSize=10;fillColor=#0c1626;strokeColor=#f59e0b;strokeWidth=1.5;html=1;shadow=1;" value="" vertex="1">
-          <mxGeometry height="185" width="180" x="510" y="125" as="geometry" />
+          <mxGeometry height="185" width="160" x="560" y="125" as="geometry" />
         </mxCell>
         <mxCell id="badge_3" parent="1" style="rounded=1;arcSize=50;fillColor=#38270d;strokeColor=#f59e0b;strokeWidth=1;html=1;align=center;verticalAlign=middle;fontColor=#fcd34d;fontSize=10;fontStyle=1;" value="03" vertex="1">
-          <mxGeometry height="20" width="26" x="525" y="140" as="geometry" />
+          <mxGeometry height="20" width="24" x="572" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_3_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="Движок Sidecar" vertex="1">
-          <mxGeometry height="20" width="120" x="558" y="140" as="geometry" />
+        <mxCell id="text_3_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=12.5;fontStyle=1;" value="Движок Sidecar" vertex="1">
+          <mxGeometry height="20" width="110" x="602" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_3_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10.5;spacingLeft=5;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Node.js (main.mjs)&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Анализ дельты шагов&lt;br&gt;• Расчет Burn Rate (расход)&lt;br&gt;• Прогноз шагов до сжатия&lt;br&gt;• Пороги (~250k / ~160k)&lt;/font&gt;" vertex="1">
-          <mxGeometry height="120" width="160" x="520" y="175" as="geometry" />
+        <mxCell id="text_3_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10;spacingLeft=4;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Node.js (main.mjs)&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Дельта между шагами&lt;br&gt;• Расчет Burn Rate&lt;br&gt;• Прогноз числа шагов&lt;br&gt;• Порог автосжатия&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="145" x="568" y="175" as="geometry" />
         </mxCell>
         <mxCell id="node_4" parent="1" style="rounded=1;arcSize=10;fillColor=#0c1626;strokeColor=#38bdf8;strokeWidth=1.5;html=1;shadow=1;" value="" vertex="1">
-          <mxGeometry height="185" width="180" x="745" y="125" as="geometry" />
+          <mxGeometry height="185" width="160" x="810" y="125" as="geometry" />
         </mxCell>
         <mxCell id="badge_4" parent="1" style="rounded=1;arcSize=50;fillColor=#0c2c47;strokeColor=#38bdf8;strokeWidth=1;html=1;align=center;verticalAlign=middle;fontColor=#7dd3fc;fontSize=10;fontStyle=1;" value="04" vertex="1">
-          <mxGeometry height="20" width="26" x="760" y="140" as="geometry" />
+          <mxGeometry height="20" width="24" x="822" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_4_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="Виджет панели" vertex="1">
-          <mxGeometry height="20" width="120" x="793" y="140" as="geometry" />
+        <mxCell id="text_4_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=12.5;fontStyle=1;" value="Виджет панели" vertex="1">
+          <mxGeometry height="20" width="110" x="852" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_4_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10.5;spacingLeft=5;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Token Weather UI&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Процедурный Canvas 2D&lt;br&gt;• Янтарный пин порога&lt;br&gt;• Счетчик шагов до сжатия&lt;br&gt;• Кнопка Safe Handoff&lt;/font&gt;" vertex="1">
-          <mxGeometry height="120" width="160" x="755" y="175" as="geometry" />
+        <mxCell id="text_4_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10;spacingLeft=4;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Token Weather UI&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Процедурный Canvas&lt;br&gt;• Янтарный пин порога&lt;br&gt;• Оценка шагов сжатия&lt;br&gt;• Кнопка Safe Handoff&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="145" x="818" y="175" as="geometry" />
         </mxCell>
         <mxCell id="node_5" parent="1" style="rounded=1;arcSize=10;fillColor=#0c1626;strokeColor=#10b981;strokeWidth=1.5;html=1;shadow=1;" value="" vertex="1">
-          <mxGeometry height="185" width="180" x="980" y="125" as="geometry" />
+          <mxGeometry height="185" width="160" x="1060" y="125" as="geometry" />
         </mxCell>
         <mxCell id="badge_5" parent="1" style="rounded=1;arcSize=50;fillColor=#093322;strokeColor=#10b981;strokeWidth=1;html=1;align=center;verticalAlign=middle;fontColor=#6ee7b7;fontSize=10;fontStyle=1;" value="05" vertex="1">
-          <mxGeometry height="20" width="26" x="995" y="140" as="geometry" />
+          <mxGeometry height="20" width="24" x="1072" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_5_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=13;fontStyle=1;" value="Чистый диалог" vertex="1">
-          <mxGeometry height="20" width="120" x="1028" y="140" as="geometry" />
+        <mxCell id="text_5_title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontColor=#ffffff;fontSize=12.5;fontStyle=1;" value="Новый диалог" vertex="1">
+          <mxGeometry height="20" width="110" x="1102" y="140" as="geometry" />
         </mxCell>
-        <mxCell id="text_5_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10.5;spacingLeft=5;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Safe Handoff (0%)&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Срез session-summary&lt;br&gt;• startConversation()&lt;br&gt;• Чистый контекст 0%&lt;br&gt;• Минимальная задержка&lt;/font&gt;" vertex="1">
-          <mxGeometry height="120" width="160" x="990" y="175" as="geometry" />
+        <mxCell id="text_5_body" parent="1" style="text;html=1;align=left;verticalAlign=top;fontColor=#94a3b8;fontSize=10;spacingLeft=4;lineHeight=1.35;" value="&lt;font color=&quot;#cbd5e1&quot;&gt;&lt;b&gt;Safe Handoff&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot;&gt;• Срез session-summary&lt;br&gt;• Сброс балласта сессии&lt;br&gt;• Базовый контекст&lt;br&gt;• Минимальный TTFT&lt;/font&gt;" vertex="1">
+          <mxGeometry height="120" width="145" x="1068" y="175" as="geometry" />
         </mxCell>
-        <mxCell id="edge_1_2" edge="1" parent="1" source="node_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#3b82f6;strokeWidth=2;fillColor=#3b82f6;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#93c5fd;fontSize=10;fontStyle=1;align=center;" target="node_2" value="Запись шага">
+        <mxCell id="edge_1_2" edge="1" parent="1" source="node_1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#3b82f6;strokeWidth=2;fillColor=#3b82f6;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#93c5fd;fontSize=10.5;fontStyle=1;align=center;whiteSpace=nowrap;" target="node_2" value="Запись">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-14" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge_2_3" edge="1" parent="1" source="node_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0ea5e9;strokeWidth=2;fillColor=#0ea5e9;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#7dd3fc;fontSize=10;fontStyle=1;align=center;" target="node_3" value="Опрос (3.5с)">
+        <mxCell id="edge_2_3" edge="1" parent="1" source="node_2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#0ea5e9;strokeWidth=2;fillColor=#0ea5e9;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#7dd3fc;fontSize=10.5;fontStyle=1;align=center;whiteSpace=nowrap;" target="node_3" value="Опрос 3.5с">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-14" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge_3_4" edge="1" parent="1" source="node_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#f59e0b;strokeWidth=2;fillColor=#f59e0b;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#fcd34d;fontSize=10;fontStyle=1;align=center;" target="node_4" value="Поток метрик">
+        <mxCell id="edge_3_4" edge="1" parent="1" source="node_3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#f59e0b;strokeWidth=2;fillColor=#f59e0b;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#fcd34d;fontSize=10.5;fontStyle=1;align=center;whiteSpace=nowrap;" target="node_4" value="Метрики">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-14" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge_4_5" edge="1" parent="1" source="node_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#10b981;strokeWidth=2;fillColor=#10b981;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#6ee7b7;fontSize=10;fontStyle=1;align=center;" target="node_5" value="1 клик Handoff">
-          <mxGeometry relative="1" x="0.0182" y="14" as="geometry">
-            <mxPoint as="offset" />
+        <mxCell id="edge_4_5" edge="1" parent="1" source="node_4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#10b981;strokeWidth=2;fillColor=#10b981;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#6ee7b7;fontSize=10.5;fontStyle=1;align=center;whiteSpace=nowrap;" target="node_5" value="Handoff">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-14" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="edge_loop" edge="1" parent="1" source="node_5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#64748b;strokeWidth=1.5;dashed=1;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#94a3b8;fontSize=10.5;align=center;" target="node_1" value="Старт нового чистого диалога с нулевой памятью (0% токенов)">
+        <mxCell id="edge_loop" edge="1" parent="1" source="node_5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#64748b;strokeWidth=1.5;dashed=1;endArrow=classic;endFill=1;labelBackgroundColor=#080e1a;fontColor=#94a3b8;fontSize=10.5;align=center;whiteSpace=nowrap;" target="node_1" value="Новый цикл разработки с чистым базовым контекстом без балласта истории">
           <mxGeometry relative="1" as="geometry">
             <mxPoint y="-12" as="offset" />
           </mxGeometry>
