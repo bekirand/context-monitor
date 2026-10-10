@@ -213,8 +213,8 @@ function checkLocalSummaryFile(workspacePath) {
 }
 
 // Подготовка переноса (гибридный роутинг: API -> Local file)
-app.api('/api/prepare-handoff', async (data) => {
-  const { conversationId, workspacePath } = data;
+const handlePrepareHandoff = async (data) => {
+  const { conversationId, workspacePath } = data || {};
   const settings = loadSettings();
 
   // Вариант 1: Есть API ключ Gemini -> Мгновенная генерация через внешний API
@@ -250,7 +250,12 @@ app.api('/api/prepare-handoff', async (data) => {
     ready: false,
     promptToAgent: 'Сформируй компактную выжимку проекта по стандарту Claude Code (1. Цель, 2. Принятые решения, 3. Файлы и пути, 4. Текущий статус) и сохрани её в файл .agent/session-summary.md для переноса сессии.'
   };
-});
+};
+
+app.api('/api/prepare-handoff', handlePrepareHandoff, 'POST');
+app.api('/api/prepare-handoff', handlePrepareHandoff, 'GET');
+app.api('/api/handoff', handlePrepareHandoff, 'POST');
+app.api('/api/handoff', handlePrepareHandoff, 'GET');
 
 // Удаление временного файла после успешного переноса
 app.api('/api/clear-local-summary', (data) => {

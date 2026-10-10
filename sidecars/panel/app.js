@@ -2,6 +2,7 @@ const sidecar = window.sidecar;
 const $ = (id) => document.getElementById(id);
 
 let toastTimer;
+let pollSummaryTimer = null;
 let currentWorkspacePath = '';
 let currentModelPreset = 'gemini';
 let currentWeatherMood = 'cloudy'; // 'cloudy' (0-40%) | 'rain' (40-70%) | 'storm' (>70%)
@@ -465,66 +466,76 @@ async function updateContextStats() {
 
 // Запуск процесса Handoff
 async function triggerHandoff() {
+  if (!sidecar || !sidecar.conversationId) {
+    toast('Нет активного диалога', true);
+    return;
+  }
+
   const btn = $('handoff-btn');
   btn.disabled = true;
   btn.textContent = '⏳ Формирование среза...';
 
   try {
-    const res = await callApi('/api/handoff', {
+    const payload = {
       conversationId: sidecar.conversationId,
-      workspacePath: currentWorkspacePath,
-    });
+      workspacePath: currentWorkspacePath
+    };
 
-    if (res.mode === 'gemini-api') {
-      toast('✅ Сводка готова! Открываем новый диалог...');
-      const summaryText = res.summary || 'Сводка проекта успешно подготовлена.';
-      const initialPrompt = `${summaryText}\n\n---\nКонтекст перенесен успешно. Готов продолжать задачу с 0% токенов.`;
-      
+    const res = await callApi('/api/prepare-handoff', payload);
+
+    // 1. Прямой режим: через Gemini API или готовый локальный файл
+    if (res.ready && res.summary) {
       btn.textContent = '🚀 Запуск сессии...';
-      await sidecar.agent.startConversation(initialPrompt);
-      toast('Новый диалог запущен!');
+      await sidecar.agent.startConversation(res.summary, 'Продолжение работы');
+      if (res.mode === 'local') {
+        callApi('/api/clear-local-summary', { workspacePath: currentWorkspacePath }).catch(() => {});
+      }
+      toast('Новый чистый диалог успешно открыт!');
       btn.disabled = false;
       btn.textContent = '🚀 Новый чат со сводкой (Handoff)';
-    } else {
-      toast('📄 Инструкция сохранена. Агент формирует срез...', false);
-      const instruction = `Сформируй компактный срез сессии (Primary Intent, Решения, Файлы, Текущий статус) и сохрани в ${res.summaryFile || 'handoff-summary.md'}`;
-      await sidecar.agent.sendMessage(instruction);
-      btn.textContent = '⌛ Ожидание агента...';
-      pollSummaryReady(res.summaryFile);
+      updateContextStats();
+      return;
+    }
+
+    // 2. Локальный режим без API-ключа: просим текущего агента составить сводку
+    if (res.mode === 'local' && !res.ready) {
+      btn.textContent = '⏳ Агент пишет срез...';
+      toast('Запросил создание сводки у агента в чате...');
+      await sidecar.agent.sendMessage(res.promptToAgent);
+
+      // Опрашиваем появление файла session-summary.md
+      clearInterval(pollSummaryTimer);
+      let attempts = 0;
+      pollSummaryTimer = setInterval(async () => {
+        attempts++;
+        if (attempts > 30) {
+          clearInterval(pollSummaryTimer);
+          btn.disabled = false;
+          btn.textContent = '🚀 Новый чат со сводкой (Handoff)';
+          toast('Превышено время ожидания сводки', true);
+          return;
+        }
+
+        try {
+          const check = await callApi('/api/prepare-handoff', payload);
+          if (check.ready && check.summary) {
+            clearInterval(pollSummaryTimer);
+            btn.textContent = '🚀 Запуск сессии...';
+            toast('🎉 Срез готов! Открываем новый диалог...');
+            await sidecar.agent.startConversation(check.summary, 'Продолжение работы');
+            callApi('/api/clear-local-summary', { workspacePath: currentWorkspacePath }).catch(() => {});
+            btn.disabled = false;
+            btn.textContent = '🚀 Новый чат со сводкой (Handoff)';
+            updateContextStats();
+          }
+        } catch {}
+      }, 2500);
     }
   } catch (err) {
     toast('Ошибка Handoff: ' + err.message, true);
     btn.disabled = false;
     btn.textContent = '🚀 Новый чат со сводкой (Handoff)';
   }
-}
-
-function pollSummaryReady(summaryFile) {
-  let attempts = 0;
-  const timer = setInterval(async () => {
-    attempts++;
-    if (attempts > 30) {
-      clearInterval(timer);
-      const btn = $('handoff-btn');
-      btn.disabled = false;
-      btn.textContent = '🚀 Новый чат со сводкой (Handoff)';
-      toast('Превышено время ожидания сводки', true);
-      return;
-    }
-
-    try {
-      const check = await callApi('/api/check-summary', { summaryFile });
-      if (check.ready) {
-        clearInterval(timer);
-        toast('🎉 Срез готов! Начинаем новую сессию...');
-        const prompt = `${check.content}\n\n---\nКонтекст перенесен. Начинаем работу с чистого листа.`;
-        await sidecar.agent.startConversation(prompt);
-        const btn = $('handoff-btn');
-        btn.disabled = false;
-        btn.textContent = '🚀 Новый чат со сводкой (Handoff)';
-      }
-    } catch {}
-  }, 3000);
 }
 
 async function init() {
