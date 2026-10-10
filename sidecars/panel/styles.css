@@ -274,11 +274,11 @@ body {
 }
 
 .progress-track {
+  position: relative;
   width: 100%;
   height: 10px;
   background: rgba(255, 255, 255, 0.07);
   border-radius: 999px;
-  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
   margin-bottom: 8px;
@@ -288,6 +288,32 @@ body {
   height: 100%;
   border-radius: 999px;
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+}
+
+/* Маркер порога Auto-compaction Antigravity */
+.compact-marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: #f59e0b;
+  box-shadow: 0 0 7px rgba(245, 158, 11, 0.75);
+  z-index: 3;
+  transition: left 0.4s ease;
+  pointer-events: auto;
+  cursor: help;
+}
+
+.compact-marker::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.9);
 }
 
 /* Градации заполнения шкалы */
@@ -349,6 +375,84 @@ body {
   background: rgba(244, 63, 94, 0.22);
   color: #fb7185;
   border: 1px solid rgba(244, 63, 94, 0.45);
+}
+
+/* Прогноз момента Auto-compaction Antigravity */
+.compact-forecast {
+  margin-top: 10px;
+  padding: 8px 11px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.3s ease;
+}
+
+.forecast-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.forecast-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forecast-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: -0.1px;
+}
+
+.forecast-target {
+  font-size: 10px;
+  font-weight: 500;
+  color: #94a3b8;
+  padding: 1px 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.forecast-steps-pill {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  transition: all 0.3s ease;
+}
+
+.forecast-sub {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+
+/* Тревожный статус перед сжатием (<25k до порога) */
+.compact-forecast.forecast-alert {
+  background: rgba(244, 63, 94, 0.08);
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+.compact-forecast.forecast-alert .forecast-steps-pill {
+  background: rgba(244, 63, 94, 0.22);
+  color: #fb7185;
+  border-color: rgba(244, 63, 94, 0.45);
+  animation: pulseForecast 1.8s infinite;
+}
+
+@keyframes pulseForecast {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.82; transform: scale(1.03); }
 }
 
 /* Компактная Сетка Метрик 2x2 */

@@ -1,5 +1,6 @@
 # Antigravity runtime data & user settings
 .data/
+.agent/
 settings.json
 *.key
 

@@ -55,13 +55,28 @@
         <div class="percent-hero-pill percent-cloudy" id="percent-val">0%</div>
       </div>
 
-      <div class="progress-track">
+      <div class="progress-track" id="progress-track">
         <div id="progress-bar" class="progress-fill bar-cloudy" style="width: 0%"></div>
+        <div id="compact-marker" class="compact-marker" style="left: 25%" title="Порог Auto-compaction Antigravity (~250k)"></div>
       </div>
 
       <div class="gauge-footer">
         <span class="gauge-footer-hint" id="gauge-footer-hint">Окно внимания модели</span>
         <span id="zone-status" class="zone-pill zone-cloudy">Облачно</span>
+      </div>
+
+      <!-- Прогноз момента Auto-compaction -->
+      <div class="compact-forecast" id="compact-forecast">
+        <div class="forecast-row">
+          <div class="forecast-left">
+            <span class="forecast-tag">⚡ Авто-компакт Antigravity</span>
+            <span class="forecast-target" id="forecast-target">порог ~250k</span>
+          </div>
+          <span class="forecast-steps-pill" id="forecast-steps-pill">~12 шагов</span>
+        </div>
+        <div class="forecast-sub" id="forecast-sub">
+          Осталось ~105k токенов до сжатия сессии
+        </div>
       </div>
     </section>
 

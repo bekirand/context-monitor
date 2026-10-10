@@ -459,6 +459,52 @@ async function updateContextStats() {
       weatherSubText.textContent = 'Критический объем памяти! Высокий риск потери фокуса';
       recommendation.textContent = '⚠️ Контекст на пределе. Немедленно нажмите кнопку переноса в новый чат.';
     }
+
+    // Обновление маркера и прогноза Auto-compaction Antigravity
+    const compactMarker = $('compact-marker');
+    const forecastTarget = $('forecast-target');
+    const forecastStepsPill = $('forecast-steps-pill');
+    const forecastSub = $('forecast-sub');
+    const compactForecast = $('compact-forecast');
+
+    const thresholdPercent = stats.compactThresholdPercent || (currentModelPreset === 'claude' ? 80 : 25);
+    const thresholdLabel = stats.compactThresholdLabel || (currentModelPreset === 'claude' ? '160k' : '250k');
+    const remaining = stats.remainingToCompact !== undefined ? stats.remainingToCompact : Math.max(0, (currentModelPreset === 'claude' ? 160000 : 250000) - stats.totalContext);
+    const steps = stats.stepsToCompact !== undefined ? stats.stepsToCompact : Math.max(1, Math.round(remaining / 8000));
+    const isImminent = stats.isCompactImminent || (remaining <= 25000);
+
+    if (compactMarker) {
+      compactMarker.style.left = `${thresholdPercent}%`;
+      compactMarker.title = `Порог Auto-compaction Antigravity (~${thresholdLabel})`;
+    }
+
+    if (forecastTarget) {
+      forecastTarget.textContent = `порог ~${thresholdLabel}`;
+    }
+
+    if (compactForecast && forecastStepsPill && forecastSub) {
+      if (remaining === 0) {
+        compactForecast.classList.add('forecast-alert');
+        forecastStepsPill.textContent = '⚠️ На пороге';
+        forecastSub.textContent = 'Объем превысил лимит. Antigravity сожмет контекст при следующем ответе.';
+      } else if (isImminent) {
+        compactForecast.classList.add('forecast-alert');
+        const sText = steps === 1 ? '1 шаг' : (steps < 5 ? `${steps} шага` : `${steps} шагов`);
+        forecastStepsPill.textContent = `⚠️ ~${sText}`;
+        forecastSub.textContent = `Осталось всего ~${formatTokens(remaining)} токенов! Рекомендуется Safe Handoff.`;
+      } else {
+        compactForecast.classList.remove('forecast-alert');
+        const c = Math.abs(steps) % 100;
+        const n = c % 10;
+        let word = 'шагов';
+        if (c < 10 || c > 20) {
+          if (n === 1) word = 'шаг';
+          else if (n > 1 && n < 5) word = 'шага';
+        }
+        forecastStepsPill.textContent = `~${steps} ${word}`;
+        forecastSub.textContent = `Осталось ~${formatTokens(remaining)} токенов до сжатия сессии`;
+      }
+    }
   } catch (err) {
     console.error('Ошибка обновления статистики:', err);
   }

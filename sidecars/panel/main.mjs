@@ -97,7 +97,14 @@ function getContextStats(conversationId) {
       modelPreset: settings.modelPreset || 'gemini',
       modelLabel,
       percent: 0,
-      stepCount: 0,
+      compactThreshold: isClaude ? 160000 : 250000,
+      compactThresholdPercent: isClaude ? 80 : 25,
+      compactThresholdLabel: isClaude ? '160k' : '250k',
+      remainingToCompact: isClaude ? 160000 : 250000,
+      stepsToCompact: Math.round((isClaude ? 160000 : 250000) / 8000),
+      burnRate: 8000,
+      isCompactImminent: false,
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -123,6 +130,38 @@ function getContextStats(conversationId) {
     
     const percent = Math.min(100, Math.round((totalContext / limit) * 100));
 
+    // Прогнозирование момента Auto-compaction в Antigravity
+    // Порог: для Claude 200k — ~160k (80%), для Gemini 1.0M — ~250k (25%)
+    const compactThreshold = isClaude ? 160000 : 250000;
+    const compactThresholdPercent = Math.round((compactThreshold / limit) * 100);
+    const compactThresholdLabel = isClaude ? '160k' : '250k';
+
+    // Расчет среднего расхода за шаг (Burn Rate) по недавней истории
+    let burnRate = 8000;
+    const recentTotals = [];
+    for (let i = lines.length - 1; i >= 0 && recentTotals.length < 6; i--) {
+      try {
+        const item = JSON.parse(lines[i]);
+        if (item.input_tokens !== undefined) {
+          recentTotals.push((item.input_tokens || 0) + (item.cache_read_tokens || 0));
+        }
+      } catch {}
+    }
+    if (recentTotals.length >= 2) {
+      const deltas = [];
+      for (let j = 0; j < recentTotals.length - 1; j++) {
+        const delta = recentTotals[j] - recentTotals[j + 1];
+        if (delta > 500 && delta < 60000) deltas.push(delta);
+      }
+      if (deltas.length > 0) {
+        burnRate = Math.round(deltas.reduce((a, b) => a + b, 0) / deltas.length);
+      }
+    }
+
+    const remainingToCompact = Math.max(0, compactThreshold - totalContext);
+    const stepsToCompact = remainingToCompact === 0 ? 0 : Math.max(1, Math.round(remainingToCompact / burnRate));
+    const isCompactImminent = remainingToCompact <= 25000;
+
     return {
       active: true,
       conversationId,
@@ -136,6 +175,13 @@ function getContextStats(conversationId) {
       modelLabel,
       percent,
       stepCount: lines.length,
+      compactThreshold,
+      compactThresholdPercent,
+      compactThresholdLabel,
+      remainingToCompact,
+      stepsToCompact,
+      burnRate,
+      isCompactImminent,
       timestamp: lastTokens ? lastTokens.created_at : new Date().toISOString(),
     };
   } catch (err) {
