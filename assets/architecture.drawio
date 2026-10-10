@@ -1,0 +1,127 @@
+<mxfile host="app.diagrams.net" modified="2026-10-10T03:30:00.000Z" agent="Context-Monitor" version="24.0.0" type="device">
+  <diagram id="context-monitor-architecture" name="Context Monitor Architecture">
+    <mxGraphModel dx="1200" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="560" background="#070c18" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- 0. ГЛАВНЫЙ ЗАГОЛОВОК ДИАГРАММЫ -->
+        <mxCell id="title" value="&lt;b style=&quot;color:#38bdf8;font-size:17px;&quot;&gt;⚡ CONTEXT MONITOR — АРХИТЕКТУРА ТЕЛЕМЕТРИИ И SAFE HANDOFF&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:11px;&quot;&gt;Поток данных: от мониторинга в Aux Pane (справа) через ядро Antigravity к чистому диалогу (слева)&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="270" y="15" width="660" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================================= -->
+        <!-- 1. СПРАВА: AUX PANE (CONTEXT MONITOR SIDEBAR)             -->
+        <!-- ========================================================= -->
+        <mxCell id="col_right_bg" value="" style="rounded=1;arcSize=6;fillColor=#091222;strokeColor=#38bdf8;strokeWidth=2;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="800" y="70" width="360" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="col_right_header" value="&lt;b style=&quot;color:#38bdf8;font-size:14px;&quot;&gt;⚡ 1. AUX PANE (БОКОВАЯ ПАНЕЛЬ)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10px;&quot;&gt;Интерфейс разработчика Context Monitor&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#0e1f38;strokeColor=#1e3a5f;strokeWidth=1;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="815" y="85" width="330" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Блок погоды -->
+        <mxCell id="box_weather" value="&lt;b style=&quot;color:#ffffff;font-size:12px;&quot;&gt;⛅ Live Token Weather (Canvas 2D)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• &lt;font color=&quot;#38bdf8&quot;&gt;0–40% Облачно&lt;/font&gt; (Cyan, спокойное небо)&lt;br&gt;• &lt;font color=&quot;#60a5fa&quot;&gt;40–70% Дождь&lt;/font&gt; (Blue, 3 слоя капель)&lt;br&gt;• &lt;font color=&quot;#fb7185&quot;&gt;&amp;gt;70% Шторм&lt;/font&gt; (Crimson, молнии, пульс)&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#0c1c36;strokeColor=#1e3a5f;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="815" y="140" width="330" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Блок прогнозирования -->
+        <mxCell id="box_forecast" value="&lt;b style=&quot;color:#fbbf24;font-size:12px;&quot;&gt;📍 Прогноз момента Auto-compaction&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• Янтарная засечка на шкале: &lt;font color=&quot;#fbbf24&quot;&gt;25% (250k)&lt;/font&gt;&lt;br&gt;• Адаптивный расчет Burn Rate (расход/шаг)&lt;br&gt;• Таймер: &lt;font color=&quot;#38bdf8&quot;&gt;~11 шагов&lt;/font&gt; до принудительного сжатия&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#131a30;strokeColor=#f59e0b;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="815" y="235" width="330" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Кнопка переноса Handoff -->
+        <mxCell id="box_handoff_btn" value="&lt;b style=&quot;color:#ffffff;font-size:12px;&quot;&gt;🚀 Кнопка Safe Handoff (1 Клик)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#cbd5e1;font-size:10.5px;&quot;&gt;Инициирует генерацию архитектурного среза и автоматический запуск нового диалога&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#1e1738;strokeColor=#fb7185;strokeWidth=1.5;html=1;align=center;verticalAlign=middle;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="815" y="330" width="330" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Sidecar Node.js Backend -->
+        <mxCell id="box_sidecar" value="&lt;b style=&quot;color:#38bdf8;font-size:11px;&quot;&gt;Node.js Sidecar (main.mjs)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:9.5px;&quot;&gt;Sidecar SDK • /api/context-stats • /api/prepare-handoff&lt;/span&gt;" style="rounded=1;arcSize=6;fillColor=#060d19;strokeColor=#1e293b;strokeWidth=1;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="815" y="415" width="330" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================================= -->
+        <!-- 2. ПО ЦЕНТРУ: ANTIGRAVITY ENGINE & BRAIN                  -->
+        <!-- ========================================================= -->
+        <mxCell id="col_mid_bg" value="" style="rounded=1;arcSize=6;fillColor=#070f1e;strokeColor=#60a5fa;strokeWidth=1.5;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="70" width="340" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="col_mid_header" value="&lt;b style=&quot;color:#60a5fa;font-size:14px;&quot;&gt;🧠 2. ANTIGRAVITY CORE (BRAIN)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10px;&quot;&gt;Системный журнал и аппаратные счетчики&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#0c182f;strokeColor=#1e3a5f;strokeWidth=1;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="435" y="85" width="310" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Журнал transcript.jsonl -->
+        <mxCell id="box_transcript" value="&lt;b style=&quot;color:#ffffff;font-size:12px;&quot;&gt;📁 logs/transcript.jsonl&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• &lt;font color=&quot;#38bdf8&quot;&gt;input_tokens&lt;/font&gt; (фактический ввод)&lt;br&gt;• &lt;font color=&quot;#60a5fa&quot;&gt;cache_read_tokens&lt;/font&gt; (кэш промпта)&lt;br&gt;• &lt;font color=&quot;#94a3b8&quot;&gt;output_tokens&lt;/font&gt; (генерация)&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#0c172a;strokeColor=#1e3a5f;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="435" y="140" width="310" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Модельные профили -->
+        <mxCell id="box_presets" value="&lt;b style=&quot;color:#ffffff;font-size:12px;&quot;&gt;⚙ Профили моделей и лимиты&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• &lt;b&gt;Gemini Flash/Pro:&lt;/b&gt; окно 1.0M токенов&lt;br&gt;• &lt;b&gt;Claude Sonnet/Opus:&lt;/b&gt; окно 200k токенов&lt;br&gt;• Пересчет зон и порогов в реальном времени&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#0c172a;strokeColor=#1e3a5f;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="435" y="235" width="310" height="85" as="geometry" />
+        </mxCell>
+
+        <!-- Нативный Auto-compaction -->
+        <mxCell id="box_autocompact" value="&lt;b style=&quot;color:#f59e0b;font-size:12px;&quot;&gt;⚠️ Нативный Auto-compaction&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• Срабатывает на &lt;font color=&quot;#f59e0b&quot;&gt;~250k токенов&lt;/font&gt;&lt;br&gt;• Принудительный Server Restart тасок&lt;br&gt;• Фоновое сжатие в &amp;lt;CONTEXT_SUMMARY&amp;gt;&lt;br&gt;• Старт со скрытым балластом ~30k–50k&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#141626;strokeColor=#f59e0b;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="435" y="330" width="310" height="95" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================================= -->
+        <!-- 3. СЛЕВА: НОВЫЙ ДИАЛОГ (SAFE HANDOFF)                     -->
+        <!-- ========================================================= -->
+        <mxCell id="col_left_bg" value="" style="rounded=1;arcSize=6;fillColor=#0a1024;strokeColor=#a855f7;strokeWidth=2;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="340" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="col_left_header" value="&lt;b style=&quot;color:#a855f7;font-size:14px;&quot;&gt;✨ 3. НОВЫЙ ДИАЛОГ (SAFE HANDOFF)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10px;&quot;&gt;Чистый старт без потери контекста задачи&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#191436;strokeColor=#6b21a8;strokeWidth=1;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="55" y="85" width="310" height="45" as="geometry" />
+        </mxCell>
+
+        <!-- Срез сессии -->
+        <mxCell id="box_summary_file" value="&lt;b style=&quot;color:#ffffff;font-size:12px;&quot;&gt;📄 .agent/session-summary.md&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• Primary Intent (главная цель)&lt;br&gt;• Принятые решения и архитектура&lt;br&gt;• Файлы, ветки Git и статус проекта&lt;br&gt;• Чек-лист следующих шагов&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#131530;strokeColor=#6b21a8;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="55" y="140" width="310" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Чистый контекст 0% -->
+        <mxCell id="box_clean_start" value="&lt;b style=&quot;color:#10b981;font-size:12px;&quot;&gt;🟢 Старт с 0% токенов контекста&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10.5px;&quot;&gt;• Промпт весит всего ~5k–8k токенов&lt;br&gt;• Отсутствие старого мусора и отладочных логов&lt;br&gt;• Разрыв цикла ошибок («Error Bias»)&lt;br&gt;• Максимальная скорость отклика (TTFT)&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#0c1c28;strokeColor=#10b981;strokeWidth=1;html=1;align=left;verticalAlign=middle;spacingLeft=12;" vertex="1" parent="1">
+          <mxGeometry x="55" y="240" width="310" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Вызов API старта -->
+        <mxCell id="box_api_start" value="&lt;b style=&quot;color:#c084fc;font-size:12px;&quot;&gt;🚀 sidecar.agent.startConversation&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;color:#94a3b8;font-size:10px;&quot;&gt;Нативный мост Antigravity Host Bridge: автоматическое открытие новой вкладки сессии со сводкой&lt;/span&gt;" style="rounded=1;arcSize=8;fillColor=#16132e;strokeColor=#9333ea;strokeWidth=1;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="55" y="340" width="310" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Преимущество -->
+        <mxCell id="box_advantage" value="&lt;b style=&quot;color:#38bdf8;font-size:11px;&quot;&gt;Итог:&lt;/b&gt; &lt;span style=&quot;color:#e2e8f0;font-size:10.5px;&quot;&gt;100% фокус на целевой задаче без потери качества&lt;/span&gt;" style="rounded=1;arcSize=6;fillColor=#061324;strokeColor=#0284c7;strokeWidth=1;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="55" y="415" width="310" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ========================================================= -->
+        <!-- СВЯЗИ И СТРЕЛКИ (СПРАВА НАЛЕВО)                           -->
+        <!-- ========================================================= -->
+
+        <!-- 1. От Core transcript к Aux Pane (Чтение метрик) -->
+        <mxCell id="arrow_read" value="&lt;font color=&quot;#38bdf8&quot;&gt;&lt;b&gt;Опрос логов каждые 3.5с&lt;/b&gt;&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#38bdf8;strokeWidth=2;fillColor=#38bdf8;endArrow=classic;endFill=1;labelBackgroundColor=#070c18;fontSize=10.5;" edge="1" parent="1" source="box_transcript" target="box_weather">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 2. От Aux Pane Handoff к Core Agent (Запрос сводки) -->
+        <mxCell id="arrow_request" value="&lt;font color=&quot;#fb7185&quot;&gt;&lt;b&gt;1-Клик Handoff&lt;/b&gt;&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#fb7185;strokeWidth=2.5;fillColor=#fb7185;endArrow=classic;endFill=1;labelBackgroundColor=#070c18;fontSize=10.5;" edge="1" parent="1" source="box_handoff_btn" target="box_summary_file">
+          <mxGeometry relative="1" as="geometry">
+            <Array points="[815, 365], [380, 365], [380, 185]" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- 3. От Core Summary к Новому Диалогу (Старт сессии) -->
+        <mxCell id="arrow_start" value="&lt;font color=&quot;#10b981&quot;&gt;&lt;b&gt;Чистый старт 0%&lt;/b&gt;&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#10b981;strokeWidth=2;fillColor=#10b981;endArrow=classic;endFill=1;labelBackgroundColor=#070c18;fontSize=10.5;" edge="1" parent="1" source="box_summary_file" target="box_clean_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- 4. Стрелка предупреждения о сжатии -->
+        <mxCell id="arrow_warn" value="&lt;font color=&quot;#f59e0b&quot;&gt;&lt;b&gt;Приближение к порогу ~250k&lt;/b&gt;&lt;/font&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#f59e0b;strokeWidth=1.5;dashed=1;endArrow=classic;endFill=1;labelBackgroundColor=#070c18;fontSize=10;" edge="1" parent="1" source="box_autocompact" target="box_forecast">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
