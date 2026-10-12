@@ -1,8 +1,12 @@
 {
   "name": "context-monitor",
   "displayName": "Context Monitor (Token Weather)",
-  "description": "Мониторинг расхода токенов и прогнозирование сжатия контекста Antigravity в статус-баре и боковой панели.",
+  "description": "Мониторинг расхода токенов и прогнозирование сжатия контекста Antigravity в статус-баре, боковой панели и десктопном приложении.",
   "version": "1.1.0",
+  "scripts": {
+    "patch-app": "node scripts/patch-antigravity.js",
+    "unpatch-app": "node scripts/patch-antigravity.js unpatch"
+  },
   "publisher": "bekirand",
   "engines": {
     "vscode": "^1.90.0"

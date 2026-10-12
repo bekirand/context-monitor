@@ -18,9 +18,9 @@ app.page('/app.js', () => readLocal('app.js'));
 app.api('/styles.css', () => new Response(readLocal('styles.css'), { contentType: 'text/css' }), 'GET');
 app.api('/logo.svg', () => new Response(readLocal('logo.svg'), { contentType: 'image/svg+xml' }), 'GET');
 
-// Настройки (хранение API ключа и пресета модели)
+// Настройки (хранение API ключа, пресета модели и видимости Mini-HUD)
 function loadSettings() {
-  const defaults = { apiKey: '', modelPreset: 'auto' };
+  const defaults = { apiKey: '', modelPreset: 'auto', showHud: true };
   if (!existsSync(SETTINGS_FILE)) return defaults;
   try {
     return { ...defaults, ...JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')) };
@@ -41,6 +41,7 @@ app.api('/api/settings', () => {
     hasApiKey: Boolean(s.apiKey && s.apiKey.trim().length > 10),
     maskedKey: s.apiKey ? s.apiKey.slice(0, 6) + '...' + s.apiKey.slice(-4) : '',
     modelPreset: s.modelPreset || 'auto',
+    showHud: s.showHud !== false,
   };
 }, 'GET');
 
@@ -51,9 +52,10 @@ app.api('/api/settings', (data) => {
     ...s,
     apiKey: data.apiKey !== undefined ? String(data.apiKey).trim() : (s.apiKey || ''),
     modelPreset: validPreset,
+    showHud: data.showHud !== undefined ? Boolean(data.showHud) : (s.showHud !== false),
   };
   saveSettings(updated);
-  return { ok: true, hasApiKey: Boolean(updated.apiKey.length > 10), modelPreset: updated.modelPreset };
+  return { ok: true, hasApiKey: Boolean(updated.apiKey.length > 10), modelPreset: updated.modelPreset, showHud: updated.showHud };
 }, 'POST');
 
 // Статус работы процесса
@@ -222,6 +224,7 @@ function getContextStats(conversationId) {
       isCompactImminent,
       toolStats,
       cacheEfficiency,
+      showHud: settings.showHud !== false,
       timestamp: lastTokens ? lastTokens.created_at : new Date().toISOString(),
     };
   } catch (err) {

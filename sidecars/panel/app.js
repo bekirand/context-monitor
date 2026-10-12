@@ -332,6 +332,28 @@ function setModelPresetUI(preset) {
   if ($('preset-claude')) $('preset-claude').classList.toggle('active', preset === 'claude');
 }
 
+let currentShowHud = true;
+
+function setHudToggleUI(show) {
+  currentShowHud = show;
+  const btn = $('toggle-hud-btn');
+  const text = $('hud-switch-text');
+  if (!btn || !text) return;
+  btn.classList.toggle('inactive', !show);
+  text.textContent = show ? 'Включен' : 'Скрыт';
+}
+
+async function toggleHud() {
+  const next = !currentShowHud;
+  try {
+    await callApi('/api/settings', { showHud: next }, 'POST');
+    setHudToggleUI(next);
+    toast(next ? '🔮 Mini-HUD включен в окне Antigravity' : '🔮 Mini-HUD скрыт в окне');
+  } catch (err) {
+    toast('Ошибка переключения: ' + err.message, true);
+  }
+}
+
 async function loadSettingsUI() {
   try {
     const s = await callApi('/api/settings', {}, 'GET');
@@ -339,6 +361,9 @@ async function loadSettingsUI() {
     const status = $('key-status');
     if (s.modelPreset) {
       setModelPresetUI(s.modelPreset);
+    }
+    if (s.showHud !== undefined) {
+      setHudToggleUI(s.showHud);
     }
     if (s.hasApiKey) {
       badge.textContent = '⚡ AI API (1 клик)';
@@ -401,6 +426,10 @@ async function updateContextStats() {
 
     $('status-badge').textContent = 'Подключено';
     $('status-badge').className = 'badge ok';
+
+    if (stats.showHud !== undefined && stats.showHud !== currentShowHud) {
+      setHudToggleUI(stats.showHud);
+    }
 
     const percent = Math.min(100, Math.max(0, stats.percent || 0));
     const progressBar = $('progress-bar');
@@ -632,6 +661,7 @@ async function init() {
   if ($('preset-auto')) $('preset-auto').addEventListener('click', () => selectModelPreset('auto'));
   $('preset-gemini').addEventListener('click', () => selectModelPreset('gemini'));
   $('preset-claude').addEventListener('click', () => selectModelPreset('claude'));
+  if ($('toggle-hud-btn')) $('toggle-hud-btn').addEventListener('click', toggleHud);
 
   $('handoff-btn').addEventListener('click', triggerHandoff);
   $('refresh-btn').addEventListener('click', () => {

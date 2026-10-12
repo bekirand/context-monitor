@@ -101,7 +101,8 @@ Side-by-side comparison of both modes — **Gemini (1.0M)** preset on the left a
 
 | Feature | Description |
 |---|---|
-| **📊 Live Status Bar Telemetry** | Persistent token counts, weather icon, and countdown steps right in the bottom status bar (`⛅ 83.7k/250k (8%) \| ⚡ ~21 steps`). No need to keep the Aux Pane open! |
+| **🔮 Floating Glass HUD for Antigravity App** | Persistent real-time widget right inside the standalone Antigravity Electron app. Compaction countdown (`⚡ 57.1k/250k (23%) • ~32 steps`), draggable, auto-persisted coordinates, minification, quick close `(×)` button, and sidecar panel visibility toggle. |
+| **📊 Live Status Bar Telemetry (IDE)** | Persistent token counts, weather icon, and countdown steps right in the bottom status bar (`⛅ 83.7k/250k (8%) \| ⚡ ~21 steps`). No need to keep the Aux Pane open! |
 | **✨ Auto Model Detection (Auto)** | Automatically detects Gemini (1.0M window, 250k threshold) or Claude (200k window, 160k threshold) and adapts gauge calibration dynamically. |
 | **🛠️ Agent Activity & Cache Chips** | Clean minimal badges showing total agent actions (`👁️ reads`, `⚡ commands`, `✏️ edits`) and cache efficiency (`⚡ 92% from cache`). |
 | **Precise Metrics Engine** | Reads actual `input_tokens` and `cache_read_tokens` directly from the active `transcript.jsonl` session log. |
@@ -137,9 +138,24 @@ git clone https://github.com/bekirand/context-monitor.git "$HOME\.gemini\config\
 git clone https://github.com/bekirand/context-monitor.git ~/.gemini/config/plugins/context-monitor
 ```
 
-### 2. Install into IDE Status Bar (Status Bar Countdown)
+### 2. Install Desktop Floating HUD into Antigravity (Electron Manager)
 
-To enable the bottom status bar item, copy the extension into your Antigravity IDE extensions directory:
+To enable the floating HUD pill inside the standalone Antigravity application:
+
+```powershell
+cd "$HOME\.gemini\config\plugins\context-monitor"
+npm run patch-app
+```
+
+> **Safe & Reversible:** Creates a full backup copy (`app.asar.bak`).  
+> To instantly revert back to vanilla state:
+> ```powershell
+> npm run unpatch-app
+> ```
+
+### 3. Install into IDE Status Bar (Status Bar Countdown)
+
+To enable the bottom status bar item inside Antigravity IDE, copy the extension:
 
 **Windows (PowerShell):**
 ```powershell
@@ -152,11 +168,12 @@ Then restart the IDE — the live countdown will appear in the bottom right corn
 
 ## 🎮 How to Use
 
-1. **Status Bar:** The live context volume and compaction countdown are always visible at the bottom: `⛅ 83.7k/250k (8%) | ⚡ ~21 steps`. Hover for detailed telemetry.
-2. **Side Panel (Aux Pane):** Open the right panel in Antigravity (or click the status bar item).
-3. **Model Profile:** Defaults to **✨ Auto** (auto-detection). You can also manually lock to **Gemini 1.0M** or **Claude 200k**.
-4. **Agent Activity:** Monitor tool executions, terminal commands, and prompt cache hit rate in real time.
-5. **Safe Handoff:** When storm conditions strike (>70%), click **"Generate Snapshot & Start New Chat"** to migrate cleanly without context degradation.
+1. **Desktop Floating HUD:** In the Antigravity chat manager window, an elegant frosted glass pill shows live token consumption and compaction countdown. Drag it anywhere, minimize it, click `(i)` for complete metrics breakdown, or hide it using `(×)` / the sidecar toggle button.
+2. **Status Bar in IDE:** The live context volume and compaction countdown are always visible at the bottom: `⛅ 83.7k/250k (8%) | ⚡ ~21 steps`. Hover for detailed telemetry.
+3. **Side Panel (Aux Pane):** Open the right panel in Antigravity (or click the status bar item).
+4. **Model Profile:** Defaults to **✨ Auto** (auto-detection). You can also manually lock to **Gemini 1.0M** or **Claude 200k**.
+5. **Agent Activity:** Monitor tool executions, terminal commands, and prompt cache hit rate in real time.
+6. **Safe Handoff:** When storm conditions strike (>70%), click **"Generate Snapshot & Start New Chat"** to migrate cleanly without context degradation.
 
 ---
 
