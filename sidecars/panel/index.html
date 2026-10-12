@@ -22,9 +22,12 @@
         <span id="status-badge" class="badge">Подключение…</span>
       </div>
 
-      <!-- Pill Toggle модели в 1 клик -->
+      <!-- Pill Toggle модели в 1 клик (Auto / Gemini / Claude) -->
       <div class="model-pills" role="radiogroup" aria-label="Профиль модели">
-        <button id="preset-gemini" type="button" class="pill-btn active" data-preset="gemini">
+        <button id="preset-auto" type="button" class="pill-btn active" data-preset="auto" title="Автоматическое определение по модели сессии">
+          ✨ Auto
+        </button>
+        <button id="preset-gemini" type="button" class="pill-btn" data-preset="gemini">
           ⚡ Gemini 1.0M
         </button>
         <button id="preset-claude" type="button" class="pill-btn" data-preset="claude">
@@ -80,7 +83,7 @@
       </div>
     </section>
 
-    <!-- Детализация сессии (Компактный 2x2 Grid) -->
+    <!-- Детализация сессии (Компактный 2x2 Grid + Активность инструментов) -->
     <section class="card glass-card">
       <div class="card-header">
         <h2>Метрики сессии</h2>
@@ -102,6 +105,20 @@
         <div class="stat-tile">
           <span class="stat-label">🔄 Шагов</span>
           <span class="stat-val" id="stat-steps">–</span>
+        </div>
+      </div>
+
+      <!-- Компактные чипы активности инструментов -->
+      <div class="tool-activity-section" id="tool-activity-section">
+        <div class="tool-activity-header">
+          <span class="activity-label">ДЕЙСТВИЯ АГЕНТА</span>
+          <span class="cache-badge" id="cache-badge">⚡ 0% из кэша</span>
+        </div>
+        <div class="tool-activity-chips" id="tool-activity-chips">
+          <span class="activity-chip total" id="chip-total">🛠️ 0 действий</span>
+          <span class="activity-chip" id="chip-view">👁️ 0 чтений</span>
+          <span class="activity-chip" id="chip-cmd">⚡ 0 команд</span>
+          <span class="activity-chip" id="chip-edit">✏️ 0 правок</span>
         </div>
       </div>
     </section>

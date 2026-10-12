@@ -4,7 +4,7 @@ const $ = (id) => document.getElementById(id);
 let toastTimer;
 let pollSummaryTimer = null;
 let currentWorkspacePath = '';
-let currentModelPreset = 'gemini';
+let currentModelPreset = 'auto';
 let currentWeatherMood = 'cloudy'; // 'cloudy' (0-40%) | 'rain' (40-70%) | 'storm' (>70%)
 
 function toast(message, isError = false) {
@@ -327,8 +327,9 @@ function initWeatherCanvas() {
 
 function setModelPresetUI(preset) {
   currentModelPreset = preset;
-  $('preset-gemini').classList.toggle('active', preset === 'gemini');
-  $('preset-claude').classList.toggle('active', preset === 'claude');
+  if ($('preset-auto')) $('preset-auto').classList.toggle('active', preset === 'auto');
+  if ($('preset-gemini')) $('preset-gemini').classList.toggle('active', preset === 'gemini');
+  if ($('preset-claude')) $('preset-claude').classList.toggle('active', preset === 'claude');
 }
 
 async function loadSettingsUI() {
@@ -357,7 +358,12 @@ async function selectModelPreset(preset) {
   try {
     await callApi('/api/settings', { modelPreset: preset }, 'POST');
     setModelPresetUI(preset);
-    toast(`Выбран профиль: ${preset === 'claude' ? 'Claude 200k' : 'Gemini 1.0M'}`);
+    const names = {
+      auto: 'Авто (Auto-detect)',
+      gemini: 'Gemini (1.0M)',
+      claude: 'Claude (200k)'
+    };
+    toast(`Выбран профиль: ${names[preset] || preset}`);
     updateContextStats();
   } catch (err) {
     toast('Ошибка переключения: ' + err.message, true);
@@ -419,7 +425,9 @@ async function updateContextStats() {
       $('tokens-text').textContent = `${formatTokens(stats.totalContext)} / ${limitLabel} токенов`;
     }
     if ($('gauge-footer-hint')) {
-      $('gauge-footer-hint').textContent = `Окно внимания ${currentModelPreset === 'claude' ? 'Claude' : 'Gemini'}`;
+      const isClaude = stats.effectivePreset === 'claude';
+      const autoNote = stats.modelPreset === 'auto' ? ' (Авто)' : '';
+      $('gauge-footer-hint').textContent = `Окно внимания ${isClaude ? 'Claude' : 'Gemini'}${autoNote}`;
     }
 
     // Детализация 2x2
@@ -427,6 +435,17 @@ async function updateContextStats() {
     $('stat-cache').textContent = formatTokens(stats.cacheTokens);
     $('stat-output').textContent = formatTokens(stats.outputTokens);
     $('stat-steps').textContent = (stats.stepCount || 0).toLocaleString('ru-RU');
+
+    // Активность инструментов и эффективность кэша
+    if ($('cache-badge')) {
+      $('cache-badge').textContent = `⚡ ${stats.cacheEfficiency || 0}% из кэша`;
+    }
+    if (stats.toolStats) {
+      if ($('chip-total')) $('chip-total').textContent = `🛠️ ${stats.toolStats.total || 0} действий`;
+      if ($('chip-view')) $('chip-view').textContent = `👁️ ${stats.toolStats.view || 0} чтений`;
+      if ($('chip-cmd')) $('chip-cmd').textContent = `⚡ ${stats.toolStats.cmd || 0} команд`;
+      if ($('chip-edit')) $('chip-edit').textContent = `✏️ ${stats.toolStats.edit || 0} правок`;
+    }
 
     progressBar.classList.remove('bar-cloudy', 'bar-rain', 'bar-storm');
     percentVal.classList.remove('percent-cloudy', 'percent-rain', 'percent-storm');
@@ -610,6 +629,7 @@ async function init() {
     });
   } catch {}
 
+  if ($('preset-auto')) $('preset-auto').addEventListener('click', () => selectModelPreset('auto'));
   $('preset-gemini').addEventListener('click', () => selectModelPreset('gemini'));
   $('preset-claude').addEventListener('click', () => selectModelPreset('claude'));
 

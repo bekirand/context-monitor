@@ -1,0 +1,45 @@
+{
+  "name": "context-monitor",
+  "displayName": "Context Monitor (Token Weather)",
+  "description": "Мониторинг расхода токенов и прогнозирование сжатия контекста Antigravity в статус-баре и боковой панели.",
+  "version": "1.1.0",
+  "publisher": "bekirand",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "antigravity",
+    "tokens",
+    "context",
+    "monitor",
+    "token-weather",
+    "status-bar"
+  ],
+  "icon": "assets/logo.svg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bekirand/context-monitor.git"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "contextMonitor.togglePanel",
+        "title": "Context Monitor: Открыть панель",
+        "category": "Context Monitor"
+      },
+      {
+        "command": "contextMonitor.refresh",
+        "title": "Context Monitor: Обновить статус",
+        "category": "Context Monitor"
+      }
+    ]
+  }
+}

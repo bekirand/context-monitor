@@ -97,15 +97,17 @@ Side-by-side comparison of both modes — **Gemini (1.0M)** preset on the left a
 
 ---
 
-## ✨ Key Features
+## ✨ Key Features (v1.1.0)
 
 | Feature | Description |
 |---|---|
+| **📊 Live Status Bar Telemetry** | Persistent token counts, weather icon, and countdown steps right in the bottom status bar (`⛅ 83.7k/250k (8%) \| ⚡ ~21 steps`). No need to keep the Aux Pane open! |
+| **✨ Auto Model Detection (Auto)** | Automatically detects Gemini (1.0M window, 250k threshold) or Claude (200k window, 160k threshold) and adapts gauge calibration dynamically. |
+| **🛠️ Agent Activity & Cache Chips** | Clean minimal badges showing total agent actions (`👁️ reads`, `⚡ commands`, `✏️ edits`) and cache efficiency (`⚡ 92% from cache`). |
 | **Precise Metrics Engine** | Reads actual `input_tokens` and `cache_read_tokens` directly from the active `transcript.jsonl` session log. |
 | **Auto-compaction Prediction** | Amber threshold indicator (25% / 80%) with an adaptive Burn Rate step counter. |
 | **Live Canvas 2D Sky** | Procedural sky, drifting clouds, 3-layer parallax raindrops, and realistic branching lightning on a lightweight native 2D Canvas. |
 | **Color Harmonization** | Percentage typography, progress bars, and weather badges transition synchronously across Cyan (Cloudy), Ice Blue (Rain), and Rose Crimson (Storm). |
-| **Gemini (1.0M) & Claude (200k) Presets** | 1-click toggle calibrating metrics and thresholds to the exact model selected in your chat. |
 | **Hybrid Safe Handoff** | Structured task summaries generated via external Gemini API or directly through the local in-dialogue agent. |
 | **Native Sidecar SDK** | Seamlessly docks in the Antigravity Aux Pane via official Sidecar SDK with zero external runtime overhead. |
 
@@ -121,6 +123,8 @@ Side-by-side comparison of both modes — **Gemini (1.0M)** preset on the left a
 
 ## 🚀 Quick Installation
 
+### 1. Install as Antigravity Plugin (Aux Pane Side Panel)
+
 Clone this repository into your Antigravity plugins directory:
 
 **Windows (PowerShell):**
@@ -133,17 +137,26 @@ git clone https://github.com/bekirand/context-monitor.git "$HOME\.gemini\config\
 git clone https://github.com/bekirand/context-monitor.git ~/.gemini/config/plugins/context-monitor
 ```
 
-After cloning, restart Antigravity (or reload extensions).
+### 2. Install into IDE Status Bar (Status Bar Countdown)
+
+To enable the bottom status bar item, copy the extension into your Antigravity IDE extensions directory:
+
+**Windows (PowerShell):**
+```powershell
+Copy-Item -Recurse -Force "$HOME\.gemini\config\plugins\context-monitor" "$HOME\.antigravity-ide\extensions\bekirand.context-monitor-1.1.0"
+```
+
+Then restart the IDE — the live countdown will appear in the bottom right corner of your status bar. Clicking it immediately toggles the side panel!
 
 ---
 
 ## 🎮 How to Use
 
-1. Open the right side panel (**Aux Pane**) in Antigravity.
-2. Select the **Context Monitor** widget.
-3. Choose your model preset: **Gemini (1.0M)** or **Claude (200k)** to align gauge thresholds.
-4. Watch the context weather evolve as you code — telemetry updates automatically every 3.5 seconds.
-5. As usage reaches Rain or Storm, click **"Generate Snapshot & Start New Chat"** to migrate cleanly to your next milestone.
+1. **Status Bar:** The live context volume and compaction countdown are always visible at the bottom: `⛅ 83.7k/250k (8%) | ⚡ ~21 steps`. Hover for detailed telemetry.
+2. **Side Panel (Aux Pane):** Open the right panel in Antigravity (or click the status bar item).
+3. **Model Profile:** Defaults to **✨ Auto** (auto-detection). You can also manually lock to **Gemini 1.0M** or **Claude 200k**.
+4. **Agent Activity:** Monitor tool executions, terminal commands, and prompt cache hit rate in real time.
+5. **Safe Handoff:** When storm conditions strike (>70%), click **"Generate Snapshot & Start New Chat"** to migrate cleanly without context degradation.
 
 ---
 

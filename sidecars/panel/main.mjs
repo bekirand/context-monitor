@@ -20,7 +20,7 @@ app.api('/logo.svg', () => new Response(readLocal('logo.svg'), { contentType: 'i
 
 // Настройки (хранение API ключа и пресета модели)
 function loadSettings() {
-  const defaults = { apiKey: '', modelPreset: 'gemini' };
+  const defaults = { apiKey: '', modelPreset: 'auto' };
   if (!existsSync(SETTINGS_FILE)) return defaults;
   try {
     return { ...defaults, ...JSON.parse(readFileSync(SETTINGS_FILE, 'utf8')) };
@@ -40,16 +40,17 @@ app.api('/api/settings', () => {
   return {
     hasApiKey: Boolean(s.apiKey && s.apiKey.trim().length > 10),
     maskedKey: s.apiKey ? s.apiKey.slice(0, 6) + '...' + s.apiKey.slice(-4) : '',
-    modelPreset: s.modelPreset || 'gemini',
+    modelPreset: s.modelPreset || 'auto',
   };
 }, 'GET');
 
 app.api('/api/settings', (data) => {
   const s = loadSettings();
+  const validPreset = ['auto', 'gemini', 'claude'].includes(data.modelPreset) ? data.modelPreset : (s.modelPreset || 'auto');
   const updated = {
     ...s,
     apiKey: data.apiKey !== undefined ? String(data.apiKey).trim() : (s.apiKey || ''),
-    modelPreset: data.modelPreset === 'claude' ? 'claude' : (data.modelPreset === 'gemini' ? 'gemini' : (s.modelPreset || 'gemini')),
+    modelPreset: validPreset,
   };
   saveSettings(updated);
   return { ok: true, hasApiKey: Boolean(updated.apiKey.length > 10), modelPreset: updated.modelPreset };
@@ -61,6 +62,41 @@ app.api('/api/status', () => ({
   platform: `${platform()} ${release()}`,
   uptimeSeconds: Math.round((Date.now() - STARTED_AT) / 1000),
 }), 'GET');
+
+function analyzeTranscript(lines) {
+  let detectedModel = null;
+  const toolStats = { total: 0, view: 0, cmd: 0, edit: 0 };
+  let lastTokens = null;
+
+  for (let i = lines.length - 1; i >= 0; i--) {
+    try {
+      const item = JSON.parse(lines[i]);
+      if (!lastTokens && item.input_tokens !== undefined) {
+        lastTokens = item;
+      }
+      if (!detectedModel) {
+        const m = (item.model || item.model_name || item.planner_model || '').toLowerCase();
+        if (m.includes('claude')) detectedModel = 'claude';
+        else if (m.includes('gemini')) detectedModel = 'gemini';
+      }
+      if (Array.isArray(item.tool_calls)) {
+        for (const tc of item.tool_calls) {
+          toolStats.total++;
+          const name = (tc.name || '').toLowerCase();
+          if (name.includes('view') || name.includes('read') || name.includes('list') || name.includes('search')) {
+            toolStats.view++;
+          } else if (name.includes('command') || name.includes('terminal')) {
+            toolStats.cmd++;
+          } else if (name.includes('write') || name.includes('replace') || name.includes('edit')) {
+            toolStats.edit++;
+          }
+        }
+      }
+    } catch {}
+  }
+
+  return { lastTokens, detectedModel, toolStats };
+}
 
 // Расчет заполнения контекста из transcript.jsonl
 function getContextStats(conversationId) {
@@ -80,12 +116,20 @@ function getContextStats(conversationId) {
   );
 
   const settings = loadSettings();
-  const isClaude = settings.modelPreset === 'claude';
+  const raw = existsSync(transcriptPath) ? readFileSync(transcriptPath, 'utf8') : '';
+  const lines = raw.trim() ? raw.trim().split('\n') : [];
+  const { lastTokens, detectedModel, toolStats } = analyzeTranscript(lines);
+
+  let effectivePreset = settings.modelPreset;
+  if (!effectivePreset || effectivePreset === 'auto') {
+    effectivePreset = detectedModel || 'gemini';
+  }
+  const isClaude = effectivePreset === 'claude';
   const limit = isClaude ? 200000 : 1000000;
   const limitLabel = isClaude ? '200k' : '1.0M';
   const modelLabel = isClaude ? 'Claude Sonnet / Opus (200k)' : 'Gemini Flash / Pro (1.0M)';
 
-  if (!existsSync(transcriptPath)) {
+  if (lines.length === 0) {
     return {
       active: false,
       message: 'Лог диалога пока пуст',
@@ -95,7 +139,9 @@ function getContextStats(conversationId) {
       totalContext: 0,
       limit,
       limitLabel,
-      modelPreset: settings.modelPreset || 'gemini',
+      modelPreset: settings.modelPreset || 'auto',
+      effectivePreset,
+      detectedModel: detectedModel || (isClaude ? 'claude' : 'gemini'),
       modelLabel,
       percent: 0,
       compactThreshold: isClaude ? 160000 : 250000,
@@ -105,29 +151,18 @@ function getContextStats(conversationId) {
       stepsToCompact: Math.round((isClaude ? 160000 : 250000) / 8000),
       burnRate: 8000,
       isCompactImminent: false,
+      toolStats,
+      cacheEfficiency: 0,
       timestamp: new Date().toISOString(),
     };
   }
 
   try {
-    const raw = readFileSync(transcriptPath, 'utf8');
-    const lines = raw.trim().split('\n');
-    let lastTokens = null;
-
-    for (let i = lines.length - 1; i >= 0; i--) {
-      try {
-        const item = JSON.parse(lines[i]);
-        if (item.input_tokens !== undefined) {
-          lastTokens = item;
-          break;
-        }
-      } catch {}
-    }
-
     const inputTokens = lastTokens ? (lastTokens.input_tokens || 0) : 0;
     const cacheTokens = lastTokens ? (lastTokens.cache_read_tokens || 0) : 0;
     const outputTokens = lastTokens ? (lastTokens.output_tokens || 0) : 0;
     const totalContext = inputTokens + cacheTokens;
+    const cacheEfficiency = totalContext > 0 ? Math.round((cacheTokens / totalContext) * 100) : 0;
     
     const percent = Math.min(100, Math.round((totalContext / limit) * 100));
 
@@ -172,7 +207,9 @@ function getContextStats(conversationId) {
       totalContext,
       limit,
       limitLabel,
-      modelPreset: settings.modelPreset || 'gemini',
+      modelPreset: settings.modelPreset || 'auto',
+      effectivePreset,
+      detectedModel: detectedModel || (isClaude ? 'claude' : 'gemini'),
       modelLabel,
       percent,
       stepCount: lines.length,
@@ -183,6 +220,8 @@ function getContextStats(conversationId) {
       stepsToCompact,
       burnRate,
       isCompactImminent,
+      toolStats,
+      cacheEfficiency,
       timestamp: lastTokens ? lastTokens.created_at : new Date().toISOString(),
     };
   } catch (err) {
