@@ -123,90 +123,102 @@ function formatStepsWord(steps) {
 function updateStatusBar() {
   if (!statusBarItem) return;
 
-  const conv = getLatestConversation();
-  if (!conv) {
-    statusBarItem.text = '$(cloud) Token Weather: нет сессии';
-    statusBarItem.tooltip = 'Активный диалог Antigravity пока не запущен';
+  try {
+    const conv = getLatestConversation();
+    if (!conv) {
+      statusBarItem.text = '$(cloud) Token Weather: нет сессии';
+      statusBarItem.tooltip = 'Активный диалог Antigravity пока не запущен';
+      statusBarItem.show();
+      return;
+    }
+
+    const analysis = analyzeTranscript(conv.transcriptPath);
+    if (!analysis || !analysis.lastTokens) {
+      statusBarItem.text = '$(cloud) 0k (0%)';
+      statusBarItem.tooltip = 'Сессия запущена, ожидание первых токенов…';
+      statusBarItem.show();
+      return;
+    }
+
+    const settings = loadSettings();
+    let effectivePreset = settings.modelPreset || 'auto';
+    if (effectivePreset === 'auto') {
+      effectivePreset = analysis.detectedModel || 'gemini';
+    }
+
+    const isClaude = effectivePreset === 'claude';
+    const limit = isClaude ? 200000 : 1000000;
+    const threshold = isClaude ? 160000 : 250000;
+    const thresholdLabel = isClaude ? '160k' : '250k';
+
+    const inputTokens = analysis.lastTokens.input_tokens || 0;
+    const cacheTokens = analysis.lastTokens.cache_read_tokens || 0;
+    const outputTokens = analysis.lastTokens.output_tokens || 0;
+    const totalContext = inputTokens + cacheTokens;
+    const cachePercent = totalContext > 0 ? Math.round((cacheTokens / totalContext) * 100) : 0;
+    const percent = Math.min(100, Math.round((totalContext / limit) * 100));
+
+    const remaining = Math.max(0, threshold - totalContext);
+    const steps = Math.max(1, Math.round(remaining / 8000));
+    const isImminent = remaining <= 25000;
+
+    // Иконка и цвет для статусной строки
+    let weatherIcon = '$(cloud)';
+    let stepsText = `~${steps} ${formatStepsWord(steps)}`;
+
+    if (percent >= 70 || remaining === 0) {
+      weatherIcon = '$(flame)';
+      statusBarItem.color = new vscode.ThemeColor('errorForeground');
+    } else if (percent >= 40 || isImminent) {
+      weatherIcon = '$(warning)';
+      statusBarItem.color = new vscode.ThemeColor('editorWarning.foreground');
+    } else {
+      weatherIcon = '$(cloud)';
+      statusBarItem.color = undefined;
+    }
+
+    let countdownLabel = remaining === 0 ? '⚠️ сжатие!' : `⚡ ~${stepsText}`;
+    statusBarItem.text = `${weatherIcon} ${formatTokens(totalContext)}/${thresholdLabel} (${percent}%) | ${countdownLabel}`;
+
+    // Всплывающая подсказка с подробной телеметрией
+    const md = new vscode.MarkdownString();
+    md.isTrusted = true;
+    md.appendMarkdown(`### 🌤️ Context Monitor (Token Weather)\n\n`);
+    md.appendMarkdown(`- **Модель:** ${isClaude ? 'Claude (200k)' : 'Gemini (1.0M)'} ${settings.modelPreset === 'auto' ? '*(Авто)*' : ''}\n`);
+    md.appendMarkdown(`- **Объем контекста:** **${formatTokens(totalContext)}** / ${formatTokens(limit)} токенов (**${percent}%**)\n`);
+    md.appendMarkdown(`- **Порог авто-сжатия Antigravity:** ~${thresholdLabel} токенов\n`);
+
+    if (remaining === 0) {
+      md.appendMarkdown(`- **Прогноз:** ⚠️ **Порог превышен!** Antigravity автоматически сожмет контекст.\n\n`);
+    } else if (isImminent) {
+      md.appendMarkdown(`- **Прогноз:** ⚠️ Осталось **~${formatTokens(remaining)}** токенов (**${stepsText}**). Рекомендуется Safe Handoff!\n\n`);
+    } else {
+      md.appendMarkdown(`- **Прогноз:** До сжатия сессии осталось **~${formatTokens(remaining)}** токенов (**${stepsText}**).\n\n`);
+    }
+
+    md.appendMarkdown(`---\n\n`);
+    md.appendMarkdown(`📥 Вход: **${formatTokens(inputTokens)}**  |  ⚡ Кэш: **${formatTokens(cacheTokens)}** (${cachePercent}%)  |  📤 Ответ: **${formatTokens(outputTokens)}**\n\n`);
+    md.appendMarkdown(`🛠️ **Действия агента:** всего **${analysis.toolStats.total}** (👁️ ${analysis.toolStats.view} чтений • ⚡ ${analysis.toolStats.cmd} команд • ✏️ ${analysis.toolStats.edit} правок)\n\n`);
+    md.appendMarkdown(`*Нажмите, чтобы открыть или скрыть боковую панель Context Monitor*`);
+
+    statusBarItem.tooltip = md;
     statusBarItem.show();
-    return;
+  } catch (err) {
+    if (statusBarItem) {
+      statusBarItem.text = '$(cloud) Context Monitor';
+      statusBarItem.show();
+    }
   }
-
-  const analysis = analyzeTranscript(conv.transcriptPath);
-  if (!analysis || !analysis.lastTokens) {
-    statusBarItem.text = '$(cloud) 0k (0%)';
-    statusBarItem.tooltip = 'Сессия запущена, ожидание первых токенов…';
-    statusBarItem.show();
-    return;
-  }
-
-  const settings = loadSettings();
-  let effectivePreset = settings.modelPreset || 'auto';
-  if (effectivePreset === 'auto') {
-    effectivePreset = analysis.detectedModel || 'gemini';
-  }
-
-  const isClaude = effectivePreset === 'claude';
-  const limit = isClaude ? 200000 : 1000000;
-  const threshold = isClaude ? 160000 : 250000;
-  const thresholdLabel = isClaude ? '160k' : '250k';
-
-  const inputTokens = analysis.lastTokens.input_tokens || 0;
-  const cacheTokens = analysis.lastTokens.cache_read_tokens || 0;
-  const outputTokens = analysis.lastTokens.output_tokens || 0;
-  const totalContext = inputTokens + cacheTokens;
-  const cachePercent = totalContext > 0 ? Math.round((cacheTokens / totalContext) * 100) : 0;
-  const percent = Math.min(100, Math.round((totalContext / limit) * 100));
-
-  const remaining = Math.max(0, threshold - totalContext);
-  const steps = Math.max(1, Math.round(remaining / 8000));
-  const isImminent = remaining <= 25000;
-
-  // Иконка и цвет для статусной строки
-  let weatherIcon = '$(cloud)';
-  let stepsText = `~${steps} ${formatStepsWord(steps)}`;
-
-  if (percent >= 70 || remaining === 0) {
-    weatherIcon = '$(flame)';
-    statusBarItem.color = new vscode.ThemeColor('errorForeground');
-  } else if (percent >= 40 || isImminent) {
-    weatherIcon = '$(warning)';
-    statusBarItem.color = new vscode.ThemeColor('editorWarning.foreground');
-  } else {
-    weatherIcon = '$(cloud)';
-    statusBarItem.color = undefined;
-  }
-
-  let countdownLabel = remaining === 0 ? '⚠️ сжатие!' : `⚡ ~${stepsText}`;
-  statusBarItem.text = `${weatherIcon} ${formatTokens(totalContext)}/${thresholdLabel} (${percent}%) | ${countdownLabel}`;
-
-  // Всплывающая подсказка с подробной телеметрией
-  const md = new vscode.MarkdownString();
-  md.isTrusted = true;
-  md.appendMarkdown(`### 🌤️ Context Monitor (Token Weather)\n\n`);
-  md.appendMarkdown(`- **Модель:** ${isClaude ? 'Claude (200k)' : 'Gemini (1.0M)'} ${settings.modelPreset === 'auto' ? '*(Авто)*' : ''}\n`);
-  md.appendMarkdown(`- **Объем контекста:** **${formatTokens(totalContext)}** / ${formatTokens(limit)} токенов (**${percent}%**)\n`);
-  md.appendMarkdown(`- **Порог авто-сжатия Antigravity:** ~${thresholdLabel} токенов\n`);
-
-  if (remaining === 0) {
-    md.appendMarkdown(`- **Прогноз:** ⚠️ **Порог превышен!** Antigravity автоматически сожмет контекст.\n\n`);
-  } else if (isImminent) {
-    md.appendMarkdown(`- **Прогноз:** ⚠️ Осталось **~${formatTokens(remaining)}** токенов (**${stepsText}**). Рекомендуется Safe Handoff!\n\n`);
-  } else {
-    md.appendMarkdown(`- **Прогноз:** До сжатия сессии осталось **~${formatTokens(remaining)}** токенов (**${stepsText}**).\n\n`);
-  }
-
-  md.appendMarkdown(`---\n\n`);
-  md.appendMarkdown(`📥 Вход: **${formatTokens(inputTokens)}**  |  ⚡ Кэш: **${formatTokens(cacheTokens)}** (${cachePercent}%)  |  📤 Ответ: **${formatTokens(outputTokens)}**\n\n`);
-  md.appendMarkdown(`🛠️ **Действия агента:** всего **${analysis.toolStats.total}** (👁️ ${analysis.toolStats.view} чтений • ⚡ ${analysis.toolStats.cmd} команд • ✏️ ${analysis.toolStats.edit} правок)\n\n`);
-  md.appendMarkdown(`*Нажмите, чтобы открыть или скрыть боковую панель Context Monitor*`);
-
-  statusBarItem.tooltip = md;
-  statusBarItem.show();
 }
 
 function activate(context) {
-  statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  // Приоритет 1000 гарантирует показ без вытеснения в меню переполнения
+  statusBarItem = vscode.window.createStatusBarItem('contextMonitor.status', vscode.StatusBarAlignment.Right, 1000);
+  statusBarItem.name = 'Context Monitor';
+  statusBarItem.text = '$(cloud) Context Monitor';
+  statusBarItem.tooltip = 'Context Monitor (Token Weather): запуск…';
   statusBarItem.command = 'contextMonitor.togglePanel';
+  statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
   const toggleCmd = vscode.commands.registerCommand('contextMonitor.togglePanel', () => {
@@ -216,6 +228,7 @@ function activate(context) {
 
   const refreshCmd = vscode.commands.registerCommand('contextMonitor.refresh', () => {
     updateStatusBar();
+    vscode.window.showInformationMessage('Context Monitor: статус обновлен');
   });
   context.subscriptions.push(refreshCmd);
 

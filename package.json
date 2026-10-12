@@ -25,7 +25,7 @@
     "url": "https://github.com/bekirand/context-monitor.git"
   },
   "activationEvents": [
-    "onStartupFinished"
+    "*"
   ],
   "main": "./extension.js",
   "contributes": {
