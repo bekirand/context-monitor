@@ -551,9 +551,15 @@ function runPatch() {
 
   console.log(`[Context Monitor] Найден app.asar: ${asarPath}`);
 
-  // Создание резервной копии
-  if (!fs.existsSync(bakPath)) {
-    console.log(`[Context Monitor] Создание резервной копии: ${bakPath}...`);
+  // Создание или обновление резервной копии чистой версии
+  let isVanilla = true;
+  try {
+    const rawHead = fs.readFileSync(asarPath, 'utf8');
+    if (rawHead.includes('initContextHud')) isVanilla = false;
+  } catch {}
+
+  if (!fs.existsSync(bakPath) || isVanilla) {
+    console.log(`[Context Monitor] Сохранение резервной копии чистой версии: ${bakPath}...`);
     fs.copyFileSync(asarPath, bakPath);
   } else {
     console.log(`[Context Monitor] Резервная копия уже существует: ${bakPath}`);

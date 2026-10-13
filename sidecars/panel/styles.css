@@ -188,6 +188,39 @@ body {
   box-shadow: none;
 }
 
+.hud-unpatched-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  border-radius: 8px;
+  font-size: 11px;
+  color: #fde047;
+}
+
+.hud-restore-btn {
+  padding: 5px 10px;
+  background: #eab308;
+  color: #0f172a;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 11px;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.hud-restore-btn:hover {
+  opacity: 0.9;
+}
+
+.hud-restore-btn:active {
+  transform: scale(0.98);
+}
+
 /* Frosted Glass Карточки (glass-dark-ui) */
 .glass-card {
   background: var(--glass-fill);

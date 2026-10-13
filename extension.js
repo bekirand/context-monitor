@@ -232,6 +232,61 @@ function activate(context) {
   });
   context.subscriptions.push(refreshCmd);
 
+  // Команда быстрого восстановления десктопного HUD после обновлений Antigravity
+  const patchCmd = vscode.commands.registerCommand('contextMonitor.patchApp', () => {
+    const patchScript = path.join(__dirname, 'scripts', 'patch-antigravity.js');
+    if (!fs.existsSync(patchScript)) {
+      vscode.window.showErrorMessage('Context Monitor: скрипт patch-antigravity.js не найден');
+      return;
+    }
+    const { exec } = require('child_process');
+    vscode.window.withProgress({
+      location: vscode.ProgressLocation.Notification,
+      title: 'Context Monitor: Восстановление Mini-HUD в Antigravity...',
+      cancellable: false
+    }, () => {
+      return new Promise((resolve) => {
+        exec(`node "${patchScript}"`, (err) => {
+          if (err) {
+            vscode.window.showErrorMessage('Ошибка применения патча: ' + err.message);
+          } else {
+            vscode.window.showInformationMessage('✅ Mini-HUD успешно восстановлен! Нажмите Ctrl+R в окне Antigravity.');
+          }
+          resolve();
+        });
+      });
+    });
+  });
+  context.subscriptions.push(patchCmd);
+
+  // Проверка: слетел ли патч после авто-обновления Antigravity
+  setTimeout(() => {
+    try {
+      const home = os.homedir();
+      let asarPath = '';
+      if (process.platform === 'win32') {
+        asarPath = path.join(process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local'), 'Programs', 'Antigravity', 'resources', 'app.asar');
+      } else if (process.platform === 'darwin') {
+        asarPath = '/Applications/Antigravity.app/Contents/Resources/app.asar';
+      } else {
+        asarPath = '/opt/Antigravity/resources/app.asar';
+      }
+      if (fs.existsSync(asarPath)) {
+        const raw = fs.readFileSync(asarPath, 'utf8');
+        if (!raw.includes('initContextHud')) {
+          vscode.window.showWarningMessage(
+            '⚡ Context Monitor: Antigravity обновился, десктопный Mini-HUD был сброшен к заводской версии.',
+            'Восстановить в 1 клик'
+          ).then((sel) => {
+            if (sel === 'Восстановить в 1 клик') {
+              vscode.commands.executeCommand('contextMonitor.patchApp');
+            }
+          });
+        }
+      }
+    } catch {}
+  }, 3000);
+
   updateStatusBar();
   pollTimer = setInterval(updateStatusBar, 3500);
 }

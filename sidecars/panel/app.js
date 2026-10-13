@@ -365,6 +365,11 @@ async function loadSettingsUI() {
     if (s.showHud !== undefined) {
       setHudToggleUI(s.showHud);
     }
+    if (s.isHudPatched === false) {
+      if ($('hud-unpatched-alert')) $('hud-unpatched-alert').style.display = 'flex';
+    } else {
+      if ($('hud-unpatched-alert')) $('hud-unpatched-alert').style.display = 'none';
+    }
     if (s.hasApiKey) {
       badge.textContent = '⚡ AI API (1 клик)';
       badge.className = 'badge ok';
@@ -662,6 +667,28 @@ async function init() {
   $('preset-gemini').addEventListener('click', () => selectModelPreset('gemini'));
   $('preset-claude').addEventListener('click', () => selectModelPreset('claude'));
   if ($('toggle-hud-btn')) $('toggle-hud-btn').addEventListener('click', toggleHud);
+
+  if ($('restore-hud-btn')) {
+    $('restore-hud-btn').addEventListener('click', async () => {
+      const btn = $('restore-hud-btn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Применение...';
+      try {
+        const res = await callApi('/api/patch-hud', {}, 'POST');
+        if (res.ok) {
+          toast('✅ Mini-HUD успешно восстановлен! Нажмите Ctrl+R в окне Antigravity.');
+          if ($('hud-unpatched-alert')) $('hud-unpatched-alert').style.display = 'none';
+        } else {
+          toast('Ошибка: ' + (res.error || 'не удалось применить патч'), true);
+        }
+      } catch (err) {
+        toast('Ошибка: ' + err.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Восстановить в 1 клик';
+      }
+    });
+  }
 
   $('handoff-btn').addEventListener('click', triggerHandoff);
   $('refresh-btn').addEventListener('click', () => {

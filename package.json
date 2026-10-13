@@ -43,6 +43,11 @@
         "command": "contextMonitor.refresh",
         "title": "Context Monitor: Обновить статус",
         "category": "Context Monitor"
+      },
+      {
+        "command": "contextMonitor.patchApp",
+        "title": "Context Monitor: Восстановить Mini-HUD в Antigravity",
+        "category": "Context Monitor"
       }
     ]
   }

@@ -2,8 +2,11 @@ import { existsSync, mkdirSync, readFileSync, statSync, unlinkSync, writeFileSyn
 import { homedir, platform, release } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
 import { Response, SidecarApp } from 'sidecar_sdk';
 
+const execAsync = promisify(exec);
 const HERE = dirname(fileURLToPath(import.meta.url));
 const STARTED_AT = Date.now();
 const DATA_DIR = process.env.ANTIGRAVITY_EXECUTABLE_DATA_DIR || join(HERE, '.data');
@@ -12,6 +15,47 @@ const SETTINGS_FILE = join(DATA_DIR, 'settings.json');
 const app = new SidecarApp();
 
 const readLocal = (name) => readFileSync(join(HERE, name), 'utf8');
+
+function getAsarPath() {
+  if (platform() === 'win32') {
+    return join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'Programs', 'Antigravity', 'resources', 'app.asar');
+  } else if (platform() === 'darwin') {
+    return '/Applications/Antigravity.app/Contents/Resources/app.asar';
+  }
+  return '/opt/Antigravity/resources/app.asar';
+}
+
+function isHudPatched() {
+  try {
+    const asar = getAsarPath();
+    if (!existsSync(asar)) return true;
+    const raw = readFileSync(asar, 'utf8');
+    return raw.includes('initContextHud');
+  } catch {
+    return true;
+  }
+}
+
+async function runPatchScript() {
+  const patchScript = join(dirname(dirname(HERE)), 'scripts', 'patch-antigravity.js');
+  if (!existsSync(patchScript)) return false;
+  try {
+    await execAsync(`node "${patchScript}"`);
+    return isHudPatched();
+  } catch (err) {
+    console.error('[Context Monitor Sidecar] Ошибка применения патча:', err);
+    return false;
+  }
+}
+
+// Автоматическая проверка и восстановление патча после обновлений Antigravity
+setTimeout(async () => {
+  const s = loadSettings();
+  if (s.showHud !== false && !isHudPatched()) {
+    console.log('[Context Monitor Sidecar] Обнаружено обновление Antigravity (патч сброшен). Авто-восстановление Mini-HUD...');
+    await runPatchScript();
+  }
+}, 1500);
 
 app.page('/', () => readLocal('index.html'));
 app.page('/app.js', () => readLocal('app.js'));
@@ -42,8 +86,14 @@ app.api('/api/settings', () => {
     maskedKey: s.apiKey ? s.apiKey.slice(0, 6) + '...' + s.apiKey.slice(-4) : '',
     modelPreset: s.modelPreset || 'auto',
     showHud: s.showHud !== false,
+    isHudPatched: isHudPatched(),
   };
 }, 'GET');
+
+app.api('/api/patch-hud', async () => {
+  const ok = await runPatchScript();
+  return { ok, isHudPatched: isHudPatched() };
+}, 'POST');
 
 app.api('/api/settings', (data) => {
   const s = loadSettings();
